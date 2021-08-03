@@ -49,8 +49,11 @@ kafka_common = {
     # At the same time, we use Kafka's AvroSerializer, which internally relies on
     # fastavro for serialization. We do not use confluent_kafka[avro], since it
     # is incompatible with its own dep on avro-python3.
+    # There is also a requirement for proto-parser-ng, which provides a way to convert
+    # a protobuf schema into a Python data structure
     "confluent_kafka>=1.5.0",
     "fastavro>=1.2.0",
+    "proto-parser-ng>=1.0.1",
 }
 
 sql_common = {

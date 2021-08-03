@@ -6,6 +6,7 @@ import confluent_kafka
 from confluent_kafka.schema_registry.schema_registry_client import SchemaRegistryClient
 
 import datahub.ingestion.extractor.schema_util as schema_util
+import datahub.ingestion.extractor.protobuf_util as protobuf_util
 from datahub.configuration import ConfigModel
 from datahub.configuration.common import AllowDenyPattern
 from datahub.configuration.kafka import KafkaConsumerConnectionConfig
@@ -109,6 +110,8 @@ class KafkaSource(Source):
         fields: List[SchemaField] = []
         if has_schema and schema.schema_type == "AVRO":
             fields = schema_util.avro_schema_to_mce_fields(schema.schema_str)
+        elif has_schema and schema.schema_type == "PROTOBUF":
+            fields = protobuf_util.protobuf_schema_to_mce_fields(schema.schema_str)
         elif has_schema:
             self.report.report_warning(
                 topic, f"unable to parse kafka schema type {schema.schema_type}"
