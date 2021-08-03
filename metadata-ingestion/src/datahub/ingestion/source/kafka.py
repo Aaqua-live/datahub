@@ -18,6 +18,7 @@ from datahub.emitter.mcp_builder import add_domain_to_entity_wu
 from datahub.ingestion.api.common import PipelineContext
 from datahub.ingestion.api.source import Source, SourceReport
 from datahub.ingestion.api.workunit import MetadataWorkUnit
+from datahub.ingestion.extractor import protobuf_util
 from datahub.ingestion.extractor import schema_util
 from datahub.metadata.com.linkedin.pegasus2avro.common import Status
 from datahub.metadata.com.linkedin.pegasus2avro.metadata.snapshot import DatasetSnapshot
@@ -171,6 +172,8 @@ class KafkaSource(Source):
             cleaned_str = self.get_schema_str_replace_confluent_ref_avro(schema)
             # "value.id" or "value.[type=string]id"
             fields = schema_util.avro_schema_to_mce_fields(cleaned_str)
+        elif schema and schema.schema_type == "PROTOBUF":
+            fields = protobuf_util.protobuf_schema_to_mce_fields(schema.schema_str)
         elif schema is not None:
             self.report.report_warning(
                 topic,
