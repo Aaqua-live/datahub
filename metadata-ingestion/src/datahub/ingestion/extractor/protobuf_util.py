@@ -18,7 +18,7 @@ from datahub.metadata.com.linkedin.pegasus2avro.schema import (
     StringTypeClass,
     UnionTypeClass,
 )
-from protoparser_ng.parser import Message, Oneof, Enum
+from protoparser_ng.parser import Field, Message, Oneof, Enum
 
 logger = logging.getLogger(__name__)
 
@@ -45,16 +45,21 @@ _field_type_mapping = {
     "oneof": UnionTypeClass,
 }
 
-def _protobuf_fields_to_mce_fields(protobuf_fields, parent: str) -> List[SchemaField]:
+def _protobuf_fields_to_mce_fields(protobuf_fields: List[Field], parent: str) -> List[SchemaField]:
     """Convert protobuf fields into MCE fields"""
     mce_fields: List[SchemaField] = []
 
     # Add fields defined in a message
     for f in protobuf_fields:
+        if f.type == 'repeated':
+            field_type = SchemaFieldDataType(type=ArrayTypeClass(nestedType=[f.key_type]))
+        else:
+            field_type = SchemaFieldDataType(type=_field_type_mapping[f.type]()) if f.type in _field_type_mapping else SchemaFieldDataType(type=RecordTypeClass())
+
         field = SchemaField(
             fieldPath = f'{parent}.{f.name}',
-            nativeDataType = f.type,
-            type = SchemaFieldDataType(type=_field_type_mapping[f.type]()) if f.type in _field_type_mapping else SchemaFieldDataType(type=RecordTypeClass()),
+            nativeDataType = f'{f.type} {f.key_type}' if f.type == 'repeated' else f.type,
+            type = field_type
         )
         mce_fields.append(field)
 
