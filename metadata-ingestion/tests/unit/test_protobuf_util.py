@@ -1,5 +1,5 @@
 from datahub.ingestion.extractor.protobuf_util import protobuf_schema_to_mce_fields
-from datahub.metadata.schema_classes import ArrayTypeClass
+from datahub.metadata.schema_classes import ArrayTypeClass, MapTypeClass
 
 SCHEMA_WITH_SINGLE_MESSAGE_EMPTY_MESSAGE = """
 syntax = "proto3";
@@ -69,6 +69,19 @@ message test_1 {
 
     message msg {
         string name = 1;
+    }
+}
+"""
+
+SCHEMA_MAP = """
+syntax = "proto3";
+
+message test_1 {
+    map<string, int64> map_1 = 1;
+    map<string, inner_msg> map_2 = 2;
+
+    message inner_msg {
+        string aString = 1;
     }
 }
 """
@@ -189,6 +202,24 @@ def test_protobuf_schema_to_mce_fields_nested_repeated():
     assert isinstance(fields[1].type.type, ArrayTypeClass)
     assert fields[1].type.type.nestedType is not None
     assert "msg" == fields[1].type.type.nestedType[0]
+
+
+def test_protobuf_schema_to_mce_fields_map():
+    schema = SCHEMA_MAP
+    fields = protobuf_schema_to_mce_fields(schema)
+
+    assert 5 == len(fields)
+    assert "test_1" == fields[0].fieldPath
+    assert "test_1.map_1" == fields[1].fieldPath
+    assert "test_1.map_2" == fields[2].fieldPath
+    assert "map" == fields[1].nativeDataType
+    assert "map" == fields[2].nativeDataType
+    assert isinstance(fields[1].type.type, MapTypeClass)
+    assert isinstance(fields[2].type.type, MapTypeClass)
+    assert "string" == fields[1].type.type.keyType
+    assert "string" == fields[2].type.type.keyType
+    assert "int64" == fields[1].type.type.valueType
+    assert "inner_msg" == fields[2].type.type.valueType
 
 
 def test_protobuf_schema_to_mce_fields_with_complex_schema():

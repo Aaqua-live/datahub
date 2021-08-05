@@ -56,6 +56,13 @@ def _protobuf_fields_to_mce_fields(
             field_type = SchemaFieldDataType(
                 type=ArrayTypeClass(nestedType=[f.key_type])
             )
+        elif f.type == "map":
+            field_type = SchemaFieldDataType(
+                type=MapTypeClass(
+                    keyType=f.key_type,
+                    valueType=f.val_type,
+                )
+            )
         else:
             field_type = (
                 SchemaFieldDataType(type=_field_type_mapping[f.type]())
