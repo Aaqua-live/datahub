@@ -1,7 +1,5 @@
-from datahub.metadata.schema_classes import BooleanTypeClass, RecordTypeClass, SchemaFieldDataTypeClass
-import pytest
-
 from datahub.ingestion.extractor.protobuf_util import protobuf_schema_to_mce_fields
+from datahub.metadata.schema_classes import ArrayTypeClass
 
 SCHEMA_WITH_SINGLE_MESSAGE_EMPTY_MESSAGE = """
 syntax = "proto3";
@@ -103,12 +101,14 @@ message outside {
 }
 """
 
+
 def test_protobuf_schema_to_mce_fields_with_single_empty_message():
     schema = SCHEMA_WITH_SINGLE_MESSAGE_EMPTY_MESSAGE
     fields = protobuf_schema_to_mce_fields(schema)
 
     assert 1 == len(fields)
-    assert 'test' == fields[0].fieldPath
+    assert "test" == fields[0].fieldPath
+
 
 def test_protobuf_schema_to_mce_fields_with_single_message_single_field():
     schema = SCHEMA_WITH_SINGLE_MESSAGE_SINGLE_FIELD
@@ -116,71 +116,80 @@ def test_protobuf_schema_to_mce_fields_with_single_message_single_field():
 
     # 1 message + 1 field
     assert 2 == len(fields)
-    assert 'test' == fields[0].fieldPath
-    assert 'test.field_1' == fields[1].fieldPath
-    assert 'message' == fields[0].nativeDataType
-    assert 'string' == fields[1].nativeDataType
+    assert "test" == fields[0].fieldPath
+    assert "test.field_1" == fields[1].fieldPath
+    assert "message" == fields[0].nativeDataType
+    assert "string" == fields[1].nativeDataType
+
 
 def test_protobuf_schema_to_mce_fields_with_two_messages_enum():
     schema = SCHEMA_WITH_TWO_MESSAGES_ENUM
     fields = protobuf_schema_to_mce_fields(schema)
 
     assert 8 == len(fields)
-    assert 'test' == fields[0].fieldPath
-    assert 'test.field_1' == fields[1].fieldPath
-    assert 'test.field_2' == fields[2].fieldPath
-    assert 'test.anEnum' == fields[3].fieldPath
-    assert 'test.anEnum.first' == fields[4].fieldPath
-    assert 'test.anEnum.second' == fields[5].fieldPath
-    assert 'anotherMessage' == fields[6].fieldPath
-    assert 'anotherMessage.anInteger' == fields[7].fieldPath
+    assert "test" == fields[0].fieldPath
+    assert "test.field_1" == fields[1].fieldPath
+    assert "test.field_2" == fields[2].fieldPath
+    assert "test.anEnum" == fields[3].fieldPath
+    assert "test.anEnum.first" == fields[4].fieldPath
+    assert "test.anEnum.second" == fields[5].fieldPath
+    assert "anotherMessage" == fields[6].fieldPath
+    assert "anotherMessage.anInteger" == fields[7].fieldPath
+
 
 def test_protobuf_schema_to_mce_fields_nested():
     schema = SCHEMA_NESTED
     fields = protobuf_schema_to_mce_fields(schema)
 
     assert 9 == len(fields)
-    assert 'test_1' == fields[0].fieldPath
+    assert "test_1" == fields[0].fieldPath
 
-    assert 'test_1.f1' == fields[1].fieldPath
-    assert 'test_2' == fields[1].nativeDataType
+    assert "test_1.f1" == fields[1].fieldPath
+    assert "test_2" == fields[1].nativeDataType
 
-    assert 'test_1.test_2' == fields[2].fieldPath
-    assert 'message' == fields[2].nativeDataType
+    assert "test_1.test_2" == fields[2].fieldPath
+    assert "message" == fields[2].nativeDataType
 
-    assert 'test_1.test_2.f2' == fields[3].fieldPath
-    assert 'test_3' == fields[3].nativeDataType
+    assert "test_1.test_2.f2" == fields[3].fieldPath
+    assert "test_3" == fields[3].nativeDataType
 
-    assert 'test_1.test_2.test_3' == fields[4].fieldPath
-    assert 'message' == fields[4].nativeDataType
+    assert "test_1.test_2.test_3" == fields[4].fieldPath
+    assert "message" == fields[4].nativeDataType
 
-    assert 'test_1.test_2.test_3.f3' == fields[5].fieldPath
-    assert 'test_4' == fields[5].nativeDataType
+    assert "test_1.test_2.test_3.f3" == fields[5].fieldPath
+    assert "test_4" == fields[5].nativeDataType
 
-    assert 'test_1.test_2.test_3.test_4' == fields[6].fieldPath
-    assert 'message' == fields[6].nativeDataType
+    assert "test_1.test_2.test_3.test_4" == fields[6].fieldPath
+    assert "message" == fields[6].nativeDataType
 
-    assert 'test_1.test_2.test_3.test_4.f4' == fields[7].fieldPath
-    assert 'test_5' == fields[7].nativeDataType
+    assert "test_1.test_2.test_3.test_4.f4" == fields[7].fieldPath
+    assert "test_5" == fields[7].nativeDataType
 
-    assert 'test_1.test_2.test_3.test_4.test_5' == fields[8].fieldPath
-    assert 'message' == fields[8].nativeDataType
+    assert "test_1.test_2.test_3.test_4.test_5" == fields[8].fieldPath
+    assert "message" == fields[8].nativeDataType
+
 
 def test_protobuf_schema_to_mce_fields_repeated():
     schema = SCHEMA_REPEATED
     fields = protobuf_schema_to_mce_fields(schema)
 
     assert 2 == len(fields)
-    assert 'repeated int64' == fields[1].nativeDataType
-    assert 'int64' == fields[1].type.type.nestedType[0]
+    assert "repeated int64" == fields[1].nativeDataType
+    assert isinstance(fields[1].type.type, ArrayTypeClass)
+    assert fields[1].type.type.nestedType is not None
+    assert "int64" == fields[1].type.type.nestedType[0]
 
-def test_protobuf_schema_to_mce_fields_repeated():
+
+def test_protobuf_schema_to_mce_fields_nested_repeated():
     schema = SCHEMA_REPEATED_WITH_MESSAGE_NESTED_TYPE
     fields = protobuf_schema_to_mce_fields(schema)
 
     assert 4 == len(fields)
-    assert 'repeated msg' == fields[1].nativeDataType
-    assert 'msg' == fields[1].type.type.nestedType[0]
+    assert "repeated msg" == fields[1].nativeDataType
+    assert isinstance(fields[1].type.type, ArrayTypeClass)
+    assert fields[1].type.type.nestedType is not None
+    assert "msg" == fields[1].type.type.nestedType[0]
+
 
 def test_protobuf_schema_to_mce_fields_with_complex_schema():
     schema = SCHEMA_COMPLEX
