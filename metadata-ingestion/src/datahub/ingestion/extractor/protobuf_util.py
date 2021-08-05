@@ -1,9 +1,8 @@
 import logging
-from os import name
-from typing import Any, List, Optional, Union
-from avro.schema import Schema
+from typing import List
 
 import protoparser_ng as protoparser
+from protoparser_ng.parser import Enum, Field, Message, Oneof
 
 from datahub.metadata.com.linkedin.pegasus2avro.schema import (
     ArrayTypeClass,
@@ -18,7 +17,6 @@ from datahub.metadata.com.linkedin.pegasus2avro.schema import (
     StringTypeClass,
     UnionTypeClass,
 )
-from protoparser_ng.parser import Field, Message, Oneof, Enum
 
 logger = logging.getLogger(__name__)
 
@@ -45,71 +43,89 @@ _field_type_mapping = {
     "oneof": UnionTypeClass,
 }
 
-def _protobuf_fields_to_mce_fields(protobuf_fields: List[Field], parent: str) -> List[SchemaField]:
+
+def _protobuf_fields_to_mce_fields(
+    protobuf_fields: List[Field], parent: str
+) -> List[SchemaField]:
     """Convert protobuf fields into MCE fields"""
     mce_fields: List[SchemaField] = []
 
     # Add fields defined in a message
     for f in protobuf_fields:
-        if f.type == 'repeated':
-            field_type = SchemaFieldDataType(type=ArrayTypeClass(nestedType=[f.key_type]))
+        if f.type == "repeated":
+            field_type = SchemaFieldDataType(
+                type=ArrayTypeClass(nestedType=[f.key_type])
+            )
         else:
-            field_type = SchemaFieldDataType(type=_field_type_mapping[f.type]()) if f.type in _field_type_mapping else SchemaFieldDataType(type=RecordTypeClass())
+            field_type = (
+                SchemaFieldDataType(type=_field_type_mapping[f.type]())
+                if f.type in _field_type_mapping
+                else SchemaFieldDataType(type=RecordTypeClass())
+            )
 
         field = SchemaField(
-            fieldPath = f'{parent}.{f.name}',
-            nativeDataType = f'{f.type} {f.key_type}' if f.type == 'repeated' else f.type,
-            type = field_type
+            fieldPath=f"{parent}.{f.name}",
+            nativeDataType=f"{f.type} {f.key_type}" if f.type == "repeated" else f.type,
+            type=field_type,
         )
         mce_fields.append(field)
 
     return mce_fields
 
+
 def _oneofs_to_mce_fields(oneof: Oneof, parent: str = None) -> List[SchemaField]:
     """Converts protobuf oneofs into MCE unions"""
     fields: List[SchemaField] = []
-    current_path = f'{parent}.{oneof.name}' if parent is not None else oneof.name
+    current_path = f"{parent}.{oneof.name}" if parent is not None else oneof.name
 
     # Add the oneof itself
-    fields.append(SchemaField(
-        fieldPath=current_path,
-        nativeDataType='oneof',
-        type=SchemaFieldDataType(type=UnionTypeClass())
-    ))
+    fields.append(
+        SchemaField(
+            fieldPath=current_path,
+            nativeDataType="oneof",
+            type=SchemaFieldDataType(type=UnionTypeClass()),
+        )
+    )
 
     # Add fields defined in the oneof
     fields += _protobuf_fields_to_mce_fields(oneof.fields, current_path)
 
     return fields
 
+
 def _enums_to_mce_fields(pbenum: Enum, parent: str = None) -> List[SchemaField]:
     """Converts protobuf enums into MCE enums"""
     fields: List[SchemaField] = []
-    current_path = f'{parent}.{pbenum.name}' if parent is not None else pbenum.name
+    current_path = f"{parent}.{pbenum.name}" if parent is not None else pbenum.name
 
     # Add the enum itself
-    fields.append(SchemaField(
-        fieldPath=current_path,
-        nativeDataType='enum',
-        type=SchemaFieldDataType(type=EnumTypeClass())
-    ))
+    fields.append(
+        SchemaField(
+            fieldPath=current_path,
+            nativeDataType="enum",
+            type=SchemaFieldDataType(type=EnumTypeClass()),
+        )
+    )
 
     # Add fields defined in an enum
     fields += _protobuf_fields_to_mce_fields(pbenum.fields, current_path)
 
     return fields
 
+
 def _message_to_mce_fields(message: Message, parent: str = None) -> List[SchemaField]:
     """Converts protobuf messages into MCE records"""
     fields: List[SchemaField] = []
-    current_path = f'{parent}.{message.name}' if parent is not None else message.name
+    current_path = f"{parent}.{message.name}" if parent is not None else message.name
 
     # Add the message itself
-    fields.append(SchemaField(
-        fieldPath=current_path,
-        nativeDataType='message',
-        type = SchemaFieldDataType(type=RecordTypeClass()),
-    ))
+    fields.append(
+        SchemaField(
+            fieldPath=current_path,
+            nativeDataType="message",
+            type=SchemaFieldDataType(type=RecordTypeClass()),
+        )
+    )
 
     # Add fields defined in a message
     fields += _protobuf_fields_to_mce_fields(message.fields, current_path)
@@ -128,6 +144,7 @@ def _message_to_mce_fields(message: Message, parent: str = None) -> List[SchemaF
 
     return fields
 
+
 def protobuf_schema_to_mce_fields(protobuf_schema_string: str) -> List[SchemaField]:
     """Converts a protobuf schema into a schema compatible with MCE"""
 
@@ -135,7 +152,7 @@ def protobuf_schema_to_mce_fields(protobuf_schema_string: str) -> List[SchemaFie
 
     fields: List[SchemaField] = []
     for k, v in proto_file.messages.items():
-        if type(v) is Message:
+        if isinstance(v, Message):
             fields += _message_to_mce_fields(v)
 
     return fields

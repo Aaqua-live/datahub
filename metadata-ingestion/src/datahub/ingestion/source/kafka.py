@@ -5,8 +5,8 @@ from typing import Iterable, List
 import confluent_kafka
 from confluent_kafka.schema_registry.schema_registry_client import SchemaRegistryClient
 
-import datahub.ingestion.extractor.schema_util as schema_util
 import datahub.ingestion.extractor.protobuf_util as protobuf_util
+import datahub.ingestion.extractor.schema_util as schema_util
 from datahub.configuration import ConfigModel
 from datahub.configuration.common import AllowDenyPattern
 from datahub.configuration.kafka import KafkaConsumerConnectionConfig
