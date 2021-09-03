@@ -15,7 +15,7 @@ import com.linkedin.datahub.graphql.types.mappers.UrnSearchResultsMapper;
 import com.linkedin.datahub.graphql.types.mlmodel.mappers.MLPrimaryKeySnapshotMapper;
 import com.linkedin.entity.Entity;
 import com.linkedin.entity.client.EntityClient;
-import com.linkedin.metadata.extractor.SnapshotToAspectMap;
+import com.linkedin.metadata.extractor.AspectExtractor;
 import com.linkedin.metadata.query.AutoCompleteResult;
 import com.linkedin.metadata.query.SearchResult;
 import graphql.execution.DataFetcherResult;
@@ -57,7 +57,8 @@ public class MLPrimaryKeyType implements SearchableEntityType<MLPrimaryKey> {
             final Map<Urn, Entity> mlPrimaryKeyMap = _mlPrimaryKeyClient.batchGet(mlPrimaryKeyUrns
                 .stream()
                 .filter(Objects::nonNull)
-                .collect(Collectors.toSet()));
+                .collect(Collectors.toSet()),
+            context.getActor());
 
             final List<Entity> gmsResults = mlPrimaryKeyUrns.stream()
                 .map(primaryKeyUrn -> mlPrimaryKeyMap.getOrDefault(primaryKeyUrn, null)).collect(Collectors.toList());
@@ -66,7 +67,7 @@ public class MLPrimaryKeyType implements SearchableEntityType<MLPrimaryKey> {
                 .map(gmsMlPrimaryKey -> gmsMlPrimaryKey == null ? null
                     : DataFetcherResult.<MLPrimaryKey>newResult()
                         .data(MLPrimaryKeySnapshotMapper.map(gmsMlPrimaryKey.getValue().getMLPrimaryKeySnapshot()))
-                        .localContext(SnapshotToAspectMap.extractAspectMap(gmsMlPrimaryKey.getValue().getMLPrimaryKeySnapshot()))
+                        .localContext(AspectExtractor.extractAspects(gmsMlPrimaryKey.getValue().getMLPrimaryKeySnapshot()))
                         .build())
                 .collect(Collectors.toList());
         } catch (Exception e) {
@@ -81,7 +82,7 @@ public class MLPrimaryKeyType implements SearchableEntityType<MLPrimaryKey> {
                                 int count,
                                 @Nonnull final QueryContext context) throws Exception {
         final Map<String, String> facetFilters = ResolverUtils.buildFacetFilters(filters, FACET_FIELDS);
-        final SearchResult searchResult = _mlPrimaryKeyClient.search("mlPrimaryKey", query, facetFilters, start, count);
+        final SearchResult searchResult = _mlPrimaryKeyClient.search("mlPrimaryKey", query, facetFilters, start, count, context.getActor());
         return UrnSearchResultsMapper.map(searchResult);
     }
 
@@ -92,7 +93,7 @@ public class MLPrimaryKeyType implements SearchableEntityType<MLPrimaryKey> {
                                             int limit,
                                             @Nonnull final QueryContext context) throws Exception {
         final Map<String, String> facetFilters = ResolverUtils.buildFacetFilters(filters, FACET_FIELDS);
-        final AutoCompleteResult result = _mlPrimaryKeyClient.autoComplete("mlPrimaryKey", query, facetFilters, limit);
+        final AutoCompleteResult result = _mlPrimaryKeyClient.autoComplete("mlPrimaryKey", query, facetFilters, limit, context.getActor());
         return AutoCompleteResultsMapper.map(result);
     }
 }

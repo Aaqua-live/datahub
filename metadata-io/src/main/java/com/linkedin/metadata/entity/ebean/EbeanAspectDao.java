@@ -1,6 +1,7 @@
 package com.linkedin.metadata.entity.ebean;
 
 import com.google.common.annotations.VisibleForTesting;
+
 import com.linkedin.common.AuditStamp;
 import com.linkedin.common.urn.Urn;
 import com.linkedin.metadata.entity.AspectStorageValidationUtil;
@@ -32,6 +33,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -41,7 +43,7 @@ import javax.persistence.RollbackException;
 import javax.persistence.Table;
 import lombok.extern.slf4j.Slf4j;
 
-import static com.linkedin.metadata.entity.EntityService.*;
+import static com.linkedin.metadata.Constants.*;
 
 @Slf4j
 public class EbeanAspectDao {
@@ -112,10 +114,13 @@ public class EbeanAspectDao {
       @Nullable final String oldActor,
       @Nullable final String oldImpersonator,
       @Nullable final Timestamp oldTime,
+      @Nullable final String oldSystemMetadata,
       @Nonnull final String newAspectMetadata,
       @Nonnull final String newActor,
       @Nullable final String newImpersonator,
-      @Nonnull final Timestamp newTime) {
+      @Nonnull final Timestamp newTime,
+      @Nullable final String newSystemMetadata
+  ) {
     validateConnection();
     if (!_canWrite) {
       return 0;
@@ -124,11 +129,11 @@ public class EbeanAspectDao {
     long largestVersion = 0;
     if (oldAspectMetadata != null && oldTime != null) {
       largestVersion = getNextVersion(urn, aspectName);
-      saveAspect(urn, aspectName, oldAspectMetadata, oldActor, oldImpersonator, oldTime, largestVersion, true);
+      saveAspect(urn, aspectName, oldAspectMetadata, oldActor, oldImpersonator, oldTime, oldSystemMetadata, largestVersion, true);
     }
 
     // Save newValue as the latest version (v0)
-    saveAspect(urn, aspectName, newAspectMetadata, newActor, newImpersonator, newTime, LATEST_ASPECT_VERSION, oldAspectMetadata == null);
+    saveAspect(urn, aspectName, newAspectMetadata, newActor, newImpersonator, newTime, newSystemMetadata, ASPECT_LATEST_VERSION, oldAspectMetadata == null);
 
     // Apply retention policy
     applyRetention(urn, aspectName, getRetention(aspectName), largestVersion);
@@ -143,6 +148,7 @@ public class EbeanAspectDao {
       @Nonnull final String actor,
       @Nullable final String impersonator,
       @Nonnull final Timestamp timestamp,
+      @Nonnull final String systemMetadata,
       final long version,
       final boolean insert) {
     validateConnection();
@@ -150,6 +156,7 @@ public class EbeanAspectDao {
     final EbeanAspectV2 aspect = new EbeanAspectV2();
     aspect.setKey(new EbeanAspectV2.PrimaryKey(urn, aspectName, version));
     aspect.setMetadata(aspectMetadata);
+    aspect.setSystemMetadata(systemMetadata);
     aspect.setCreatedOn(timestamp);
     aspect.setCreatedBy(actor);
     if (impersonator != null) {
@@ -200,6 +207,26 @@ public class EbeanAspectDao {
   public EbeanAspectV2 getAspect(@Nonnull final EbeanAspectV2.PrimaryKey primaryKey) {
     validateConnection();
     return _server.find(EbeanAspectV2.class, primaryKey);
+  }
+
+  @Nullable
+  public boolean deleteAspect(@Nonnull final EbeanAspectV2 aspect) {
+    validateConnection();
+    return _server.delete(aspect);
+  }
+
+  @Nullable
+  public int deleteUrn(@Nonnull final String urn) {
+    return _server.createQuery(EbeanAspectV2.class).where().eq("urn", urn).delete();
+  }
+
+  @Nullable
+  public Optional<EbeanAspectV2> getEarliestAspect(@Nonnull final String urn) {
+    return _server.createQuery(EbeanAspectV2.class).where().eq("urn", urn)
+        .orderBy()
+        .asc(EbeanAspectV2.CREATED_ON_COLUMN)
+        .setMaxRows(1)
+        .findList().stream().findFirst();
   }
 
   @Nonnull
@@ -349,7 +376,7 @@ public class EbeanAspectDao {
         .select(EbeanAspectV2.KEY_ID)
         .where()
         .eq(EbeanAspectV2.ASPECT_COLUMN, aspectName)
-        .eq(EbeanAspectV2.VERSION_COLUMN, LATEST_ASPECT_VERSION)
+        .eq(EbeanAspectV2.VERSION_COLUMN, ASPECT_LATEST_VERSION)
         .setFirstRow(start)
         .setMaxRows(pageSize)
         .orderBy()
@@ -396,7 +423,7 @@ public class EbeanAspectDao {
       @Nonnull final String aspectName,
       final int start,
       final int pageSize) {
-    return listAspectMetadata(entityName, aspectName, LATEST_ASPECT_VERSION, start, pageSize);
+    return listAspectMetadata(entityName, aspectName, ASPECT_LATEST_VERSION, start, pageSize);
   }
 
   @Nonnull
@@ -493,7 +520,7 @@ public class EbeanAspectDao {
         .where()
         .eq(EbeanAspectV2.URN_COLUMN, urn)
         .eq(EbeanAspectV2.ASPECT_COLUMN, aspectName)
-        .ne(EbeanAspectV2.VERSION_COLUMN, LATEST_ASPECT_VERSION)
+        .ne(EbeanAspectV2.VERSION_COLUMN, ASPECT_LATEST_VERSION)
         .le(EbeanAspectV2.VERSION_COLUMN, largestVersion - retention.getMaxVersionsToRetain() + 1)
         .delete();
   }

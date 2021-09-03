@@ -16,7 +16,7 @@ import com.linkedin.datahub.graphql.types.mappers.UrnSearchResultsMapper;
 import com.linkedin.datahub.graphql.types.mlmodel.mappers.MLFeatureSnapshotMapper;
 import com.linkedin.entity.Entity;
 import com.linkedin.entity.client.EntityClient;
-import com.linkedin.metadata.extractor.SnapshotToAspectMap;
+import com.linkedin.metadata.extractor.AspectExtractor;
 import com.linkedin.metadata.query.AutoCompleteResult;
 import com.linkedin.metadata.query.SearchResult;
 import graphql.execution.DataFetcherResult;
@@ -58,7 +58,8 @@ public class MLFeatureType implements SearchableEntityType<MLFeature> {
             final Map<Urn, Entity> mlFeatureMap = _mlFeatureClient.batchGet(mlFeatureUrns
                 .stream()
                 .filter(Objects::nonNull)
-                .collect(Collectors.toSet()));
+                .collect(Collectors.toSet()),
+            context.getActor());
 
             final List<Entity> gmsResults = mlFeatureUrns.stream()
                 .map(featureUrn -> mlFeatureMap.getOrDefault(featureUrn, null)).collect(Collectors.toList());
@@ -67,7 +68,7 @@ public class MLFeatureType implements SearchableEntityType<MLFeature> {
                 .map(gmsMlFeature -> gmsMlFeature == null ? null
                     : DataFetcherResult.<MLFeature>newResult()
                         .data(MLFeatureSnapshotMapper.map(gmsMlFeature.getValue().getMLFeatureSnapshot()))
-                        .localContext(SnapshotToAspectMap.extractAspectMap(gmsMlFeature.getValue().getMLFeatureSnapshot()))
+                        .localContext(AspectExtractor.extractAspects(gmsMlFeature.getValue().getMLFeatureSnapshot()))
                         .build())
                 .collect(Collectors.toList());
         } catch (Exception e) {
@@ -82,7 +83,7 @@ public class MLFeatureType implements SearchableEntityType<MLFeature> {
                                 int count,
                                 @Nonnull final QueryContext context) throws Exception {
         final Map<String, String> facetFilters = ResolverUtils.buildFacetFilters(filters, FACET_FIELDS);
-        final SearchResult searchResult = _mlFeatureClient.search("mlFeature", query, facetFilters, start, count);
+        final SearchResult searchResult = _mlFeatureClient.search("mlFeature", query, facetFilters, start, count, context.getActor());
         return UrnSearchResultsMapper.map(searchResult);
     }
 
@@ -93,7 +94,7 @@ public class MLFeatureType implements SearchableEntityType<MLFeature> {
                                             int limit,
                                             @Nonnull final QueryContext context) throws Exception {
         final Map<String, String> facetFilters = ResolverUtils.buildFacetFilters(filters, FACET_FIELDS);
-        final AutoCompleteResult result = _mlFeatureClient.autoComplete("mlFeature", query, facetFilters, limit);
+        final AutoCompleteResult result = _mlFeatureClient.autoComplete("mlFeature", query, facetFilters, limit, context.getActor());
         return AutoCompleteResultsMapper.map(result);
     }
 }

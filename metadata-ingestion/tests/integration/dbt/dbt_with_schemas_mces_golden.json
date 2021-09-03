@@ -10,7 +10,11 @@
                         "customProperties": {
                             "node_type": "model",
                             "materialization": "ephemeral",
-                            "dbt_file_path": "models/transform/customer_details.sql"
+                            "dbt_file_path": "models/transform/customer_details.sql",
+                            "manifest_schema": "https://schemas.getdbt.com/dbt/manifest/v1.json",
+                            "manifest_version": "0.19.1",
+                            "catalog_schema": "https://schemas.getdbt.com/dbt/catalog/v1.json",
+                            "catalog_version": "0.19.1"
                         },
                         "externalUrl": null,
                         "description": null,
@@ -83,7 +87,12 @@
             ]
         }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": {
+        "lastObserved": 1615443388097,
+        "runId": "dbt-test-with-schemas",
+        "properties": null
+    }
 },
 {
     "auditHeader": null,
@@ -97,7 +106,11 @@
                             "node_type": "model",
                             "materialization": "table",
                             "dbt_file_path": "models/billing/monthly_billing_with_cust.sql",
-                            "catalog_type": "BASE TABLE"
+                            "catalog_type": "BASE TABLE",
+                            "manifest_schema": "https://schemas.getdbt.com/dbt/manifest/v1.json",
+                            "manifest_version": "0.19.1",
+                            "catalog_schema": "https://schemas.getdbt.com/dbt/catalog/v1.json",
+                            "catalog_version": "0.19.1"
                         },
                         "externalUrl": null,
                         "description": null,
@@ -167,7 +180,8 @@
                                 "nativeDataType": "numeric",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "billing_month",
@@ -182,7 +196,8 @@
                                 "nativeDataType": "timestamp with time zone",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "customer_id",
@@ -197,7 +212,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "email",
@@ -212,7 +228,8 @@
                                 "nativeDataType": "text",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             }
                         ],
                         "primaryKeys": null,
@@ -222,7 +239,12 @@
             ]
         }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": {
+        "lastObserved": 1615443388097,
+        "runId": "dbt-test-with-schemas",
+        "properties": null
+    }
 },
 {
     "auditHeader": null,
@@ -236,7 +258,11 @@
                             "node_type": "model",
                             "materialization": "view",
                             "dbt_file_path": "models/base/payments_base.sql",
-                            "catalog_type": "VIEW"
+                            "catalog_type": "VIEW",
+                            "manifest_schema": "https://schemas.getdbt.com/dbt/manifest/v1.json",
+                            "manifest_version": "0.19.1",
+                            "catalog_schema": "https://schemas.getdbt.com/dbt/catalog/v1.json",
+                            "catalog_version": "0.19.1"
                         },
                         "externalUrl": null,
                         "description": null,
@@ -351,7 +377,8 @@
                                 "nativeDataType": "numeric(5,2)",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "customer_id",
@@ -366,7 +393,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "payment_date",
@@ -381,7 +409,8 @@
                                 "nativeDataType": "timestamp with time zone",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "payment_id",
@@ -396,7 +425,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "rental_id",
@@ -411,7 +441,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "staff_id",
@@ -426,7 +457,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             }
                         ],
                         "primaryKeys": null,
@@ -436,7 +468,12 @@
             ]
         }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": {
+        "lastObserved": 1615443388097,
+        "runId": "dbt-test-with-schemas",
+        "properties": null
+    }
 },
 {
     "auditHeader": null,
@@ -450,7 +487,11 @@
                             "node_type": "model",
                             "materialization": "table",
                             "dbt_file_path": "models/transform/payments_by_customer_by_month.sql",
-                            "catalog_type": "BASE TABLE"
+                            "catalog_type": "BASE TABLE",
+                            "manifest_schema": "https://schemas.getdbt.com/dbt/manifest/v1.json",
+                            "manifest_version": "0.19.1",
+                            "catalog_schema": "https://schemas.getdbt.com/dbt/catalog/v1.json",
+                            "catalog_version": "0.19.1"
                         },
                         "externalUrl": null,
                         "description": null,
@@ -511,7 +552,8 @@
                                 "nativeDataType": "numeric",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "billing_month",
@@ -526,7 +568,8 @@
                                 "nativeDataType": "timestamp with time zone",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "customer_id",
@@ -541,7 +584,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             }
                         ],
                         "primaryKeys": null,
@@ -551,7 +595,12 @@
             ]
         }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": {
+        "lastObserved": 1615443388097,
+        "runId": "dbt-test-with-schemas",
+        "properties": null
+    }
 },
 {
     "auditHeader": null,
@@ -567,7 +616,11 @@
                             "some_other_property": "test 1",
                             "node_type": "source",
                             "dbt_file_path": "models/base.yml",
-                            "catalog_type": "BASE TABLE"
+                            "catalog_type": "BASE TABLE",
+                            "manifest_schema": "https://schemas.getdbt.com/dbt/manifest/v1.json",
+                            "manifest_version": "0.19.1",
+                            "catalog_schema": "https://schemas.getdbt.com/dbt/catalog/v1.json",
+                            "catalog_version": "0.19.1"
                         },
                         "externalUrl": null,
                         "description": "postgres comment: Actors table \u2013 from postgres\n\ndbt model description: description for actor table from dbt",
@@ -618,7 +671,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "first_name",
@@ -633,7 +687,8 @@
                                 "nativeDataType": "text",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "last_name",
@@ -648,7 +703,8 @@
                                 "nativeDataType": "text",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "last_update",
@@ -663,7 +719,8 @@
                                 "nativeDataType": "timestamp with time zone",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             }
                         ],
                         "primaryKeys": null,
@@ -673,7 +730,12 @@
             ]
         }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": {
+        "lastObserved": 1615443388097,
+        "runId": "dbt-test-with-schemas",
+        "properties": null
+    }
 },
 {
     "auditHeader": null,
@@ -686,7 +748,11 @@
                         "customProperties": {
                             "node_type": "source",
                             "dbt_file_path": "models/base.yml",
-                            "catalog_type": "BASE TABLE"
+                            "catalog_type": "BASE TABLE",
+                            "manifest_schema": "https://schemas.getdbt.com/dbt/manifest/v1.json",
+                            "manifest_version": "0.19.1",
+                            "catalog_schema": "https://schemas.getdbt.com/dbt/catalog/v1.json",
+                            "catalog_version": "0.19.1"
                         },
                         "externalUrl": null,
                         "description": "a user's address",
@@ -737,7 +803,8 @@
                                 "nativeDataType": "text",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "address2",
@@ -752,7 +819,8 @@
                                 "nativeDataType": "text",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "address_id",
@@ -767,7 +835,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "city_id",
@@ -782,7 +851,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "district",
@@ -797,7 +867,8 @@
                                 "nativeDataType": "text",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "last_update",
@@ -812,7 +883,8 @@
                                 "nativeDataType": "timestamp with time zone",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "phone",
@@ -827,7 +899,8 @@
                                 "nativeDataType": "text",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "postal_code",
@@ -842,7 +915,8 @@
                                 "nativeDataType": "text",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             }
                         ],
                         "primaryKeys": null,
@@ -852,7 +926,12 @@
             ]
         }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": {
+        "lastObserved": 1615443388097,
+        "runId": "dbt-test-with-schemas",
+        "properties": null
+    }
 },
 {
     "auditHeader": null,
@@ -865,7 +944,11 @@
                         "customProperties": {
                             "node_type": "source",
                             "dbt_file_path": "models/base.yml",
-                            "catalog_type": "BASE TABLE"
+                            "catalog_type": "BASE TABLE",
+                            "manifest_schema": "https://schemas.getdbt.com/dbt/manifest/v1.json",
+                            "manifest_version": "0.19.1",
+                            "catalog_schema": "https://schemas.getdbt.com/dbt/catalog/v1.json",
+                            "catalog_version": "0.19.1"
                         },
                         "externalUrl": null,
                         "description": "a user's category",
@@ -916,7 +999,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "last_update",
@@ -931,7 +1015,8 @@
                                 "nativeDataType": "timestamp with time zone",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "name",
@@ -946,7 +1031,8 @@
                                 "nativeDataType": "text",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             }
                         ],
                         "primaryKeys": null,
@@ -956,7 +1042,12 @@
             ]
         }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": {
+        "lastObserved": 1615443388097,
+        "runId": "dbt-test-with-schemas",
+        "properties": null
+    }
 },
 {
     "auditHeader": null,
@@ -969,7 +1060,11 @@
                         "customProperties": {
                             "node_type": "source",
                             "dbt_file_path": "models/base.yml",
-                            "catalog_type": "BASE TABLE"
+                            "catalog_type": "BASE TABLE",
+                            "manifest_schema": "https://schemas.getdbt.com/dbt/manifest/v1.json",
+                            "manifest_version": "0.19.1",
+                            "catalog_schema": "https://schemas.getdbt.com/dbt/catalog/v1.json",
+                            "catalog_version": "0.19.1"
                         },
                         "externalUrl": null,
                         "description": null,
@@ -1020,7 +1115,8 @@
                                 "nativeDataType": "text",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "city_id",
@@ -1035,7 +1131,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "country_id",
@@ -1050,7 +1147,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "last_update",
@@ -1065,7 +1163,8 @@
                                 "nativeDataType": "timestamp with time zone",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             }
                         ],
                         "primaryKeys": null,
@@ -1075,7 +1174,12 @@
             ]
         }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": {
+        "lastObserved": 1615443388097,
+        "runId": "dbt-test-with-schemas",
+        "properties": null
+    }
 },
 {
     "auditHeader": null,
@@ -1091,7 +1195,11 @@
                             "some_other_property": "test 2",
                             "node_type": "source",
                             "dbt_file_path": "models/base.yml",
-                            "catalog_type": "BASE TABLE"
+                            "catalog_type": "BASE TABLE",
+                            "manifest_schema": "https://schemas.getdbt.com/dbt/manifest/v1.json",
+                            "manifest_version": "0.19.1",
+                            "catalog_schema": "https://schemas.getdbt.com/dbt/catalog/v1.json",
+                            "catalog_version": "0.19.1"
                         },
                         "externalUrl": null,
                         "description": null,
@@ -1142,7 +1250,8 @@
                                 "nativeDataType": "text",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "country_id",
@@ -1157,7 +1266,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "last_update",
@@ -1172,7 +1282,8 @@
                                 "nativeDataType": "timestamp with time zone",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             }
                         ],
                         "primaryKeys": null,
@@ -1182,7 +1293,12 @@
             ]
         }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": {
+        "lastObserved": 1615443388097,
+        "runId": "dbt-test-with-schemas",
+        "properties": null
+    }
 },
 {
     "auditHeader": null,
@@ -1195,7 +1311,11 @@
                         "customProperties": {
                             "node_type": "source",
                             "dbt_file_path": "models/base.yml",
-                            "catalog_type": "BASE TABLE"
+                            "catalog_type": "BASE TABLE",
+                            "manifest_schema": "https://schemas.getdbt.com/dbt/manifest/v1.json",
+                            "manifest_version": "0.19.1",
+                            "catalog_schema": "https://schemas.getdbt.com/dbt/catalog/v1.json",
+                            "catalog_version": "0.19.1"
                         },
                         "externalUrl": null,
                         "description": "description for customer table from dbt",
@@ -1246,7 +1366,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "activebool",
@@ -1261,7 +1382,8 @@
                                 "nativeDataType": "boolean",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "address_id",
@@ -1276,7 +1398,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "create_date",
@@ -1291,7 +1414,8 @@
                                 "nativeDataType": "date",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "customer_id",
@@ -1306,7 +1430,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "email",
@@ -1321,7 +1446,8 @@
                                 "nativeDataType": "text",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "first_name",
@@ -1336,7 +1462,8 @@
                                 "nativeDataType": "text",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "last_name",
@@ -1351,7 +1478,8 @@
                                 "nativeDataType": "text",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "last_update",
@@ -1366,7 +1494,8 @@
                                 "nativeDataType": "timestamp with time zone",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "store_id",
@@ -1381,7 +1510,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             }
                         ],
                         "primaryKeys": null,
@@ -1391,7 +1521,12 @@
             ]
         }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": {
+        "lastObserved": 1615443388097,
+        "runId": "dbt-test-with-schemas",
+        "properties": null
+    }
 },
 {
     "auditHeader": null,
@@ -1404,7 +1539,11 @@
                         "customProperties": {
                             "node_type": "source",
                             "dbt_file_path": "models/base.yml",
-                            "catalog_type": "BASE TABLE"
+                            "catalog_type": "BASE TABLE",
+                            "manifest_schema": "https://schemas.getdbt.com/dbt/manifest/v1.json",
+                            "manifest_version": "0.19.1",
+                            "catalog_schema": "https://schemas.getdbt.com/dbt/catalog/v1.json",
+                            "catalog_version": "0.19.1"
                         },
                         "externalUrl": null,
                         "description": null,
@@ -1455,7 +1594,8 @@
                                 "nativeDataType": "numeric(5,2)",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "customer_id",
@@ -1470,7 +1610,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "payment_date",
@@ -1485,7 +1626,8 @@
                                 "nativeDataType": "timestamp with time zone",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "payment_id",
@@ -1500,7 +1642,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "rental_id",
@@ -1515,7 +1658,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "staff_id",
@@ -1530,7 +1674,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             }
                         ],
                         "primaryKeys": null,
@@ -1540,7 +1685,12 @@
             ]
         }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": {
+        "lastObserved": 1615443388097,
+        "runId": "dbt-test-with-schemas",
+        "properties": null
+    }
 },
 {
     "auditHeader": null,
@@ -1557,7 +1707,11 @@
                             "some_other_property": "test 3",
                             "node_type": "source",
                             "dbt_file_path": "models/base.yml",
-                            "catalog_type": "BASE TABLE"
+                            "catalog_type": "BASE TABLE",
+                            "manifest_schema": "https://schemas.getdbt.com/dbt/manifest/v1.json",
+                            "manifest_version": "0.19.1",
+                            "catalog_schema": "https://schemas.getdbt.com/dbt/catalog/v1.json",
+                            "catalog_version": "0.19.1"
                         },
                         "externalUrl": null,
                         "description": null,
@@ -1608,7 +1762,8 @@
                                 "nativeDataType": "numeric(5,2)",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "customer_id",
@@ -1623,7 +1778,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "payment_date",
@@ -1638,7 +1794,8 @@
                                 "nativeDataType": "timestamp with time zone",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "payment_id",
@@ -1653,7 +1810,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "rental_id",
@@ -1668,7 +1826,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "staff_id",
@@ -1683,7 +1842,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             }
                         ],
                         "primaryKeys": null,
@@ -1693,7 +1853,12 @@
             ]
         }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": {
+        "lastObserved": 1615443388097,
+        "runId": "dbt-test-with-schemas",
+        "properties": null
+    }
 },
 {
     "auditHeader": null,
@@ -1706,7 +1871,11 @@
                         "customProperties": {
                             "node_type": "source",
                             "dbt_file_path": "models/base.yml",
-                            "catalog_type": "BASE TABLE"
+                            "catalog_type": "BASE TABLE",
+                            "manifest_schema": "https://schemas.getdbt.com/dbt/manifest/v1.json",
+                            "manifest_version": "0.19.1",
+                            "catalog_schema": "https://schemas.getdbt.com/dbt/catalog/v1.json",
+                            "catalog_version": "0.19.1"
                         },
                         "externalUrl": null,
                         "description": null,
@@ -1757,7 +1926,8 @@
                                 "nativeDataType": "numeric(5,2)",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "customer_id",
@@ -1772,7 +1942,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "payment_date",
@@ -1787,7 +1958,8 @@
                                 "nativeDataType": "timestamp with time zone",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "payment_id",
@@ -1802,7 +1974,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "rental_id",
@@ -1817,7 +1990,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "staff_id",
@@ -1832,7 +2006,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             }
                         ],
                         "primaryKeys": null,
@@ -1842,7 +2017,12 @@
             ]
         }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": {
+        "lastObserved": 1615443388097,
+        "runId": "dbt-test-with-schemas",
+        "properties": null
+    }
 },
 {
     "auditHeader": null,
@@ -1855,7 +2035,11 @@
                         "customProperties": {
                             "node_type": "source",
                             "dbt_file_path": "models/base.yml",
-                            "catalog_type": "BASE TABLE"
+                            "catalog_type": "BASE TABLE",
+                            "manifest_schema": "https://schemas.getdbt.com/dbt/manifest/v1.json",
+                            "manifest_version": "0.19.1",
+                            "catalog_schema": "https://schemas.getdbt.com/dbt/catalog/v1.json",
+                            "catalog_version": "0.19.1"
                         },
                         "externalUrl": null,
                         "description": null,
@@ -1906,7 +2090,8 @@
                                 "nativeDataType": "numeric(5,2)",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "customer_id",
@@ -1921,7 +2106,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "payment_date",
@@ -1936,7 +2122,8 @@
                                 "nativeDataType": "timestamp with time zone",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "payment_id",
@@ -1951,7 +2138,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "rental_id",
@@ -1966,7 +2154,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "staff_id",
@@ -1981,7 +2170,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             }
                         ],
                         "primaryKeys": null,
@@ -1991,7 +2181,12 @@
             ]
         }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": {
+        "lastObserved": 1615443388097,
+        "runId": "dbt-test-with-schemas",
+        "properties": null
+    }
 },
 {
     "auditHeader": null,
@@ -2004,7 +2199,11 @@
                         "customProperties": {
                             "node_type": "source",
                             "dbt_file_path": "models/base.yml",
-                            "catalog_type": "BASE TABLE"
+                            "catalog_type": "BASE TABLE",
+                            "manifest_schema": "https://schemas.getdbt.com/dbt/manifest/v1.json",
+                            "manifest_version": "0.19.1",
+                            "catalog_schema": "https://schemas.getdbt.com/dbt/catalog/v1.json",
+                            "catalog_version": "0.19.1"
                         },
                         "externalUrl": null,
                         "description": "a payment",
@@ -2055,7 +2254,8 @@
                                 "nativeDataType": "numeric(5,2)",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "customer_id",
@@ -2070,7 +2270,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "payment_date",
@@ -2085,7 +2286,8 @@
                                 "nativeDataType": "timestamp with time zone",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "payment_id",
@@ -2100,7 +2302,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "rental_id",
@@ -2115,7 +2318,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "staff_id",
@@ -2130,7 +2334,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             }
                         ],
                         "primaryKeys": null,
@@ -2140,7 +2345,12 @@
             ]
         }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": {
+        "lastObserved": 1615443388097,
+        "runId": "dbt-test-with-schemas",
+        "properties": null
+    }
 },
 {
     "auditHeader": null,
@@ -2153,7 +2363,11 @@
                         "customProperties": {
                             "node_type": "source",
                             "dbt_file_path": "models/base.yml",
-                            "catalog_type": "BASE TABLE"
+                            "catalog_type": "BASE TABLE",
+                            "manifest_schema": "https://schemas.getdbt.com/dbt/manifest/v1.json",
+                            "manifest_version": "0.19.1",
+                            "catalog_schema": "https://schemas.getdbt.com/dbt/catalog/v1.json",
+                            "catalog_version": "0.19.1"
                         },
                         "externalUrl": null,
                         "description": null,
@@ -2204,7 +2418,8 @@
                                 "nativeDataType": "numeric(5,2)",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "customer_id",
@@ -2219,7 +2434,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "payment_date",
@@ -2234,7 +2450,8 @@
                                 "nativeDataType": "timestamp with time zone",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "payment_id",
@@ -2249,7 +2466,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "rental_id",
@@ -2264,7 +2482,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             },
                             {
                                 "fieldPath": "staff_id",
@@ -2279,7 +2498,8 @@
                                 "nativeDataType": "integer",
                                 "recursive": false,
                                 "globalTags": null,
-                                "glossaryTerms": null
+                                "glossaryTerms": null,
+                                "isPartOfKey": false
                             }
                         ],
                         "primaryKeys": null,
@@ -2289,6 +2509,11 @@
             ]
         }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": {
+        "lastObserved": 1615443388097,
+        "runId": "dbt-test-with-schemas",
+        "properties": null
+    }
 }
 ]

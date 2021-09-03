@@ -94,7 +94,8 @@
                   "nativeDataType": "int",
                   "recursive": false,
                   "globalTags": null,
-                  "glossaryTerms": null
+                  "glossaryTerms": null,
+                  "isPartOfKey": false
                 },
                 {
                   "fieldPath": "flightdate",
@@ -109,7 +110,8 @@
                   "nativeDataType": "string",
                   "recursive": false,
                   "globalTags": null,
-                  "glossaryTerms": null
+                  "glossaryTerms": null,
+                  "isPartOfKey": false
                 },
                 {
                   "fieldPath": "uniquecarrier",
@@ -124,7 +126,8 @@
                   "nativeDataType": "string",
                   "recursive": false,
                   "globalTags": null,
-                  "glossaryTerms": null
+                  "glossaryTerms": null,
+                  "isPartOfKey": false
                 },
                 {
                   "fieldPath": "airlineid",
@@ -139,7 +142,8 @@
                   "nativeDataType": "int",
                   "recursive": false,
                   "globalTags": null,
-                  "glossaryTerms": null
+                  "glossaryTerms": null,
+                  "isPartOfKey": false
                 },
                 {
                   "fieldPath": "carrier",
@@ -154,7 +158,8 @@
                   "nativeDataType": "string",
                   "recursive": false,
                   "globalTags": null,
-                  "glossaryTerms": null
+                  "glossaryTerms": null,
+                  "isPartOfKey": false
                 },
                 {
                   "fieldPath": "flightnum",
@@ -169,7 +174,8 @@
                   "nativeDataType": "string",
                   "recursive": false,
                   "globalTags": null,
-                  "glossaryTerms": null
+                  "glossaryTerms": null,
+                  "isPartOfKey": false
                 },
                 {
                   "fieldPath": "origin",
@@ -184,7 +190,8 @@
                   "nativeDataType": "string",
                   "recursive": false,
                   "globalTags": null,
-                  "glossaryTerms": null
+                  "glossaryTerms": null,
+                  "isPartOfKey": false
                 }
               ],
               "primaryKeys": null,
@@ -194,7 +201,8 @@
         ]
       }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": null
   },
   {
     "auditHeader": null,
@@ -292,7 +300,8 @@
                   "nativeDataType": "array<struct<name:string,position:array<double>,location:array<double>>>",
                   "recursive": false,
                   "globalTags": null,
-                  "glossaryTerms": null
+                  "glossaryTerms": null,
+                  "isPartOfKey": false
                 }
               ],
               "primaryKeys": null,
@@ -302,7 +311,8 @@
         ]
       }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": null
   },
   {
     "auditHeader": null,
@@ -398,7 +408,8 @@
                   "nativeDataType": "int",
                   "recursive": false,
                   "globalTags": null,
-                  "glossaryTerms": null
+                  "glossaryTerms": null,
+                  "isPartOfKey": false
                 },
                 {
                   "fieldPath": "quarter",
@@ -413,7 +424,8 @@
                   "nativeDataType": "int",
                   "recursive": false,
                   "globalTags": null,
-                  "glossaryTerms": null
+                  "glossaryTerms": null,
+                  "isPartOfKey": false
                 },
                 {
                   "fieldPath": "month",
@@ -428,7 +440,8 @@
                   "nativeDataType": "int",
                   "recursive": false,
                   "globalTags": null,
-                  "glossaryTerms": null
+                  "glossaryTerms": null,
+                  "isPartOfKey": false
                 },
                 {
                   "fieldPath": "dayofmonth",
@@ -443,7 +456,8 @@
                   "nativeDataType": "int",
                   "recursive": false,
                   "globalTags": null,
-                  "glossaryTerms": null
+                  "glossaryTerms": null,
+                  "isPartOfKey": false
                 }
               ],
               "primaryKeys": null,
@@ -453,7 +467,8 @@
         ]
       }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": null
   },
   {
     "auditHeader": null,
@@ -478,7 +493,8 @@
         ]
       }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": null
   },
   {
     "auditHeader": null,
@@ -503,7 +519,8 @@
         ]
       }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": null
   },
   {
     "auditHeader": null,
@@ -541,7 +558,8 @@
         ]
       }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": null
   },
   {
     "auditHeader": null,
@@ -579,7 +597,8 @@
         ]
       }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": null
   },
   {
     "auditHeader": null,
@@ -617,7 +636,8 @@
         ]
       }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": null
   },
   {
     "auditHeader": null,
@@ -656,7 +676,8 @@
         ]
       }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": null
   },
   {
     "auditHeader": null,
@@ -692,7 +713,8 @@
         ]
       }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": null
   },
   {
     "auditHeader": null,
@@ -728,7 +750,8 @@
         ]
       }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": null
   },
   {
     "auditHeader": null,
@@ -758,7 +781,8 @@
         ]
       }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": null
   },
   {
     "auditHeader": null,
@@ -798,7 +822,8 @@
         ]
       }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": null
   },
   {
     "auditHeader": null,
@@ -836,7 +861,8 @@
         ]
       }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": null
   },
   {
     "auditHeader": null,
@@ -874,7 +900,8 @@
         ]
       }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": null
   },
   {
     "auditHeader": null,
@@ -914,7 +941,8 @@
         ]
       }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": null
   },
   {
     "auditHeader": null,
@@ -944,6 +972,7 @@
         ]
       }
     },
-    "proposedDelta": null
+    "proposedDelta": null,
+    "systemMetadata": null
   }
 ]

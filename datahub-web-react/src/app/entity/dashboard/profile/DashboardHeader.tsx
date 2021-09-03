@@ -5,7 +5,7 @@ import { EntityType, Dashboard } from '../../../../types.generated';
 import { useEntityRegistry } from '../../../useEntityRegistry';
 import { capitalizeFirstLetter } from '../../../shared/capitalizeFirstLetter';
 import { AvatarsGroup } from '../../../shared/avatar';
-import UpdatableDescription from '../../shared/UpdatableDescription';
+import UpdatableDescription from '../../shared/components/legacy/UpdatableDescription';
 import analytics, { EventType, EntityActionType } from '../../../analytics';
 
 const styles = {
@@ -42,7 +42,7 @@ export default function DashboardHeader({
                     <Typography.Text strong type="secondary">
                         {capitalizedPlatform}
                     </Typography.Text>
-                    {info?.externalUrl && <Button onClick={openExternalUrl}>View in {capitalizedPlatform}</Button>}
+                    {!!info?.externalUrl && <Button onClick={openExternalUrl}>View in {capitalizedPlatform}</Button>}
                 </Space>
             </Row>
             <UpdatableDescription
@@ -53,7 +53,7 @@ export default function DashboardHeader({
                 urn={urn}
             />
             <AvatarsGroup owners={ownership?.owners} entityRegistry={entityRegistry} size="large" />
-            {info?.lastModified ? (
+            {info?.lastModified?.time ? (
                 <Typography.Text type="secondary">
                     Last modified at {new Date(info?.lastModified.time).toLocaleDateString('en-US')}
                 </Typography.Text>

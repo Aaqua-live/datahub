@@ -1,7 +1,7 @@
 import json
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, Iterable, List, Optional
+from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 import dateutil.parser
 
@@ -12,6 +12,7 @@ from datahub.ingestion.api.common import PipelineContext
 from datahub.ingestion.api.source import Source, SourceReport
 from datahub.ingestion.api.workunit import MetadataWorkUnit
 from datahub.ingestion.source.sql.sql_types import (
+    BIGQUERY_TYPES_MAP,
     POSTGRES_TYPES_MAP,
     SNOWFLAKE_TYPES_MAP,
     resolve_postgres_modified_type,
@@ -48,6 +49,7 @@ class DBTConfig(ConfigModel):
     env: str = DEFAULT_ENV
     target_platform: str
     load_schemas: bool
+    use_identifiers: bool = False
     node_type_pattern: AllowDenyPattern = AllowDenyPattern.allow_all()
 
 
@@ -104,9 +106,9 @@ def get_columns(catalog_node: dict, manifest_node: dict) -> List[DBTColumn]:
         raw_column = raw_columns[key]
 
         dbtCol = DBTColumn(
-            name=raw_column["name"],
+            name=raw_column["name"].lower(),
             comment=raw_column.get("comment", ""),
-            description=manifest_columns.get(key, {}).get("description", ""),
+            description=manifest_columns.get(key.lower(), {}).get("description", ""),
             data_type=raw_column["type"],
             index=raw_column["index"],
         )
@@ -118,7 +120,8 @@ def extract_dbt_entities(
     all_manifest_entities: Dict[str, Dict[str, Any]],
     all_catalog_entities: Dict[str, Dict[str, Any]],
     sources_results: List[Dict[str, Any]],
-    load_catalog: bool,
+    load_schemas: bool,
+    use_identifiers: bool,
     target_platform: str,
     environment: str,
     node_type_pattern: AllowDenyPattern,
@@ -135,7 +138,7 @@ def extract_dbt_entities(
 
         name = manifest_node["name"]
 
-        if "identifier" in manifest_node and not load_catalog:
+        if "identifier" in manifest_node and use_identifiers:
             name = manifest_node["identifier"]
 
         if manifest_node.get("alias") is not None:
@@ -159,7 +162,8 @@ def extract_dbt_entities(
             upstream_urns = get_upstreams(
                 manifest_node["depends_on"]["nodes"],
                 all_manifest_entities,
-                load_catalog,
+                load_schemas,
+                use_identifiers,
                 target_platform,
                 environment,
             )
@@ -204,7 +208,7 @@ def extract_dbt_entities(
 
         # overwrite columns from catalog
         if (
-            dbtNode.materialization != "ephemeral" and load_catalog
+            dbtNode.materialization != "ephemeral" and load_schemas
         ):  # we don't want columns if platform isn't 'dbt'
             logger.debug("Loading schema info")
             catalog_node = all_catalog_entities.get(key)
@@ -229,12 +233,13 @@ def loadManifestAndCatalog(
     manifest_path: str,
     catalog_path: str,
     sources_path: Optional[str],
-    load_catalog: bool,
+    load_schemas: bool,
+    use_identifiers: bool,
     target_platform: str,
     environment: str,
     node_type_pattern: AllowDenyPattern,
     report: SourceReport,
-) -> List[DBTNode]:
+) -> Tuple[List[DBTNode], Optional[str], Optional[str], Optional[str], Optional[str]]:
     with open(manifest_path, "r") as manifest:
         dbt_manifest_json = json.load(manifest)
 
@@ -247,6 +252,12 @@ def loadManifestAndCatalog(
             sources_results = dbt_sources_json["results"]
     else:
         sources_results = {}
+
+    manifest_schema = dbt_manifest_json.get("metadata", {}).get("dbt_schema_version")
+    manifest_version = dbt_manifest_json.get("metadata", {}).get("dbt_version")
+
+    catalog_schema = dbt_catalog_json.get("metadata", {}).get("dbt_schema_version")
+    catalog_version = dbt_catalog_json.get("metadata", {}).get("dbt_version")
 
     manifest_nodes = dbt_manifest_json["nodes"]
     manifest_sources = dbt_manifest_json["sources"]
@@ -262,14 +273,15 @@ def loadManifestAndCatalog(
         all_manifest_entities,
         all_catalog_entities,
         sources_results,
-        load_catalog,
+        load_schemas,
+        use_identifiers,
         target_platform,
         environment,
         node_type_pattern,
         report,
     )
 
-    return nodes
+    return nodes, manifest_schema, manifest_version, catalog_schema, catalog_version
 
 
 def get_urn_from_dbtNode(
@@ -303,7 +315,8 @@ def get_custom_properties(node: DBTNode) -> Dict[str, str]:
 def get_upstreams(
     upstreams: List[str],
     all_nodes: Dict[str, dict],
-    load_catalog: bool,
+    load_schemas: bool,
+    use_identifiers: bool,
     target_platform: str,
     environment: str,
 ) -> List[str]:
@@ -311,7 +324,7 @@ def get_upstreams(
 
     for upstream in upstreams:
 
-        if "identifier" in all_nodes[upstream] and not load_catalog:
+        if "identifier" in all_nodes[upstream] and use_identifiers:
             name = all_nodes[upstream]["identifier"]
         else:
             name = all_nodes[upstream]["name"]
@@ -358,6 +371,7 @@ _field_type_mapping = {
     "float8": NumberTypeClass,
     **POSTGRES_TYPES_MAP,
     **SNOWFLAKE_TYPES_MAP,
+    **BIGQUERY_TYPES_MAP,
 }
 
 
@@ -393,7 +407,11 @@ def get_schema_metadata(
 
         description = None
 
-        if column.comment and column.description:
+        if (
+            column.comment
+            and column.description
+            and column.comment != column.description
+        ):
             description = f"{platform} comment: {column.comment}\n\ndbt model description: {column.description}"
         elif column.comment:
             description = column.comment
@@ -447,16 +465,36 @@ class DBTSource(Source):
         self.report = SourceReport()
 
     def get_workunits(self) -> Iterable[MetadataWorkUnit]:
-        nodes = loadManifestAndCatalog(
+        (
+            nodes,
+            manifest_schema,
+            manifest_version,
+            catalog_schema,
+            catalog_version,
+        ) = loadManifestAndCatalog(
             self.config.manifest_path,
             self.config.catalog_path,
             self.config.sources_path,
             self.config.load_schemas,
+            self.config.use_identifiers,
             self.config.target_platform,
             self.config.env,
             self.config.node_type_pattern,
             self.report,
         )
+
+        additional_custom_props = {
+            "manifest_schema": manifest_schema,
+            "manifest_version": manifest_version,
+            "catalog_schema": catalog_schema,
+            "catalog_version": catalog_version,
+        }
+
+        additional_custom_props_filtered = {
+            key: value
+            for key, value in additional_custom_props.items()
+            if value is not None
+        }
 
         for node in nodes:
 
@@ -467,16 +505,21 @@ class DBTSource(Source):
 
             description = None
 
-            if node.comment and node.description:
+            if node.comment and node.description and node.comment != node.description:
                 description = f"{self.config.target_platform} comment: {node.comment}\n\ndbt model description: {node.description}"
             elif node.comment:
                 description = node.comment
             elif node.description:
                 description = node.description
 
+            custom_props = {
+                **get_custom_properties(node),
+                **additional_custom_props_filtered,
+            }
+
             dbt_properties = DatasetPropertiesClass(
                 description=description,
-                customProperties=get_custom_properties(node),
+                customProperties=custom_props,
                 tags=[],
             )
             dataset_snapshot.aspects.append(dbt_properties)

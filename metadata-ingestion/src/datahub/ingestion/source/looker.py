@@ -31,9 +31,6 @@ from datahub.metadata.schema_classes import (
     ChartInfoClass,
     ChartTypeClass,
     DashboardInfoClass,
-    OwnerClass,
-    OwnershipClass,
-    OwnershipTypeClass,
 )
 
 logger = logging.getLogger(__name__)
@@ -160,7 +157,6 @@ class LookerDashboardSource(Source):
             # We are not going to support parsing arbitrary Looker expressions here, so going to ignore these fields for now
             if "dimension" in field:
                 dimension = field["dimension"]
-                expression = field["expression"]  # noqa: F841
                 custom_field_to_underlying_field[dimension] = None
 
         # A query uses fields defined in views, find the views those fields use
@@ -324,7 +320,6 @@ class LookerDashboardSource(Source):
     def _make_dashboard_and_chart_mces(
         self, looker_dashboard: LookerDashboard
     ) -> List[MetadataChangeEvent]:
-        actor = self.source_config.actor
 
         chart_mces = [
             self._make_chart_mce(element)
@@ -348,12 +343,6 @@ class LookerDashboardSource(Source):
         )
 
         dashboard_snapshot.aspects.append(dashboard_info)
-        owners = [OwnerClass(owner=actor, type=OwnershipTypeClass.DATAOWNER)]
-        dashboard_snapshot.aspects.append(
-            OwnershipClass(
-                owners=owners,
-            )
-        )
         dashboard_snapshot.aspects.append(Status(removed=looker_dashboard.is_deleted))
 
         dashboard_mce = MetadataChangeEvent(proposedSnapshot=dashboard_snapshot)

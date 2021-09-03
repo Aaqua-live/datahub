@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useEffect } from 'react';
 import * as QueryString from 'query-string';
 import { useHistory, useLocation, useParams } from 'react-router';
 import { Affix, Tabs } from 'antd';
@@ -8,7 +8,9 @@ import { SearchablePage } from './SearchablePage';
 import { useEntityRegistry } from '../useEntityRegistry';
 import { FacetFilterInput, EntityType } from '../../types.generated';
 import useFilters from './utils/useFilters';
+import { useGetAllEntitySearchResults } from '../../utils/customGraphQL/useGetAllEntitySearchResults';
 import { navigateToSearchUrl } from './utils/navigateToSearchUrl';
+import { countFormatter } from '../../utils/formatter';
 import { EntitySearchResults } from './EntitySearchResults';
 import { IconStyleType } from '../entity/Entity';
 import { AllEntitiesSearchResults } from './AllEntitiesSearchResults';
@@ -25,18 +27,39 @@ const StyledTabs = styled(Tabs)`
         }
         padding-top: 12px;
         margin-bottom: 16px;
+        .ant-tabs-tab-btn {
+            display: flex;
+            align-items: center;
+        }
+        .ant-tabs-tab .anticon {
+            margin-right: 8px;
+        }
     }
 `;
 
 const StyledTab = styled.span`
     &&& {
-        font-size: 20px;
+        font-size: 18px;
+        padding-bottom: 2px;
+    }
+`;
+const StyledNumberInTab = styled.span`
+    &&& {
+        padding-left: 8px;
+        font-size: 14px;
+        color: gray;
     }
 `;
 
 type SearchPageParams = {
     type?: string;
 };
+
+type SearchResultCounts = {
+    [key in EntityType]?: number;
+};
+
+const RESULTS_PER_GROUP = 3; // Results limit per entities
 
 /**
  * A search results page.
@@ -53,6 +76,54 @@ export const SearchPage = () => {
     const activeType = entityRegistry.getTypeOrDefaultFromPathName(useParams<SearchPageParams>().type || '', undefined);
     const page: number = params.page && Number(params.page as string) > 0 ? Number(params.page as string) : 1;
     const filters: Array<FacetFilterInput> = useFilters(params);
+
+    const allSearchResultsByType = useGetAllEntitySearchResults({
+        query,
+        start: 0,
+        count: RESULTS_PER_GROUP,
+        filters: null,
+    });
+
+    const loading = Object.keys(allSearchResultsByType).some((type) => {
+        return allSearchResultsByType[type].loading;
+    });
+
+    const noResults = Object.keys(allSearchResultsByType).every((type) => {
+        return (
+            !allSearchResultsByType[type].loading &&
+            allSearchResultsByType[type].data?.search?.searchResults.length === 0
+        );
+    });
+
+    const resultCounts: SearchResultCounts = useMemo(() => {
+        if (!loading) {
+            const counts: SearchResultCounts = {};
+            Object.keys(allSearchResultsByType).forEach((key) => {
+                if (!allSearchResultsByType[key].loading) {
+                    counts[key as EntityType] = allSearchResultsByType[key].data?.search?.total || 0;
+                }
+            });
+            return counts;
+        }
+        return {};
+    }, [allSearchResultsByType, loading]);
+
+    useEffect(() => {
+        if (!loading) {
+            let resultCount = 0;
+            Object.keys(allSearchResultsByType).forEach((key) => {
+                if (!allSearchResultsByType[key].loading) {
+                    resultCount += allSearchResultsByType[key].data?.search?.total;
+                }
+            });
+
+            analytics.event({
+                type: EventType.SearchResultsViewEvent,
+                query,
+                total: resultCount,
+            });
+        }
+    }, [query, allSearchResultsByType, loading]);
 
     const onSearch = (q: string, type?: EntityType) => {
         if (q.trim().length === 0) {
@@ -85,24 +156,34 @@ export const SearchPage = () => {
         navigateToSearchUrl({ type: activeType, query, page: newPage, filters, history, entityRegistry });
     };
 
+    const filteredSearchTypes =
+        resultCounts && Object.keys(resultCounts).length > 0
+            ? searchTypes.filter((type: EntityType) => !!resultCounts[type] && (resultCounts[type] as number) > 0)
+            : [];
+
     return (
         <SearchablePage initialQuery={query} onSearch={onSearch}>
-            <Affix offsetTop={80}>
+            <Affix offsetTop={60}>
                 <StyledTabs
                     activeKey={activeType ? entityRegistry.getCollectionName(activeType) : ALL_ENTITIES_TAB_NAME}
                     size="large"
                     onChange={onChangeSearchType}
                 >
                     <Tabs.TabPane tab={<StyledTab>All</StyledTab>} key={ALL_ENTITIES_TAB_NAME} />
-                    {searchTypes.map((t) => (
+                    {filteredSearchTypes.map((type: EntityType) => (
                         <Tabs.TabPane
                             tab={
                                 <>
-                                    {entityRegistry.getIcon(t, 16, IconStyleType.TAB_VIEW)}
-                                    <StyledTab>{entityRegistry.getCollectionName(t)}</StyledTab>
+                                    {entityRegistry.getIcon(type, 12, IconStyleType.TAB_VIEW)}
+                                    <StyledTab>{entityRegistry.getCollectionName(type)}</StyledTab>
+                                    {resultCounts[type] ? (
+                                        <StyledNumberInTab>{`${countFormatter(
+                                            resultCounts[type] || 0,
+                                        )}`}</StyledNumberInTab>
+                                    ) : null}
                                 </>
                             }
-                            key={entityRegistry.getCollectionName(t)}
+                            key={entityRegistry.getCollectionName(type)}
                         />
                     ))}
                 </StyledTabs>
@@ -115,9 +196,15 @@ export const SearchPage = () => {
                     filters={filters}
                     onChangeFilters={onChangeFilters}
                     onChangePage={onChangePage}
+                    searchResult={allSearchResultsByType[activeType]}
                 />
             ) : (
-                <AllEntitiesSearchResults query={query} />
+                <AllEntitiesSearchResults
+                    query={query}
+                    allSearchResultsByType={allSearchResultsByType}
+                    loading={loading}
+                    noResults={noResults}
+                />
             )}
         </SearchablePage>
     );
