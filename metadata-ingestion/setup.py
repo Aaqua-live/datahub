@@ -53,6 +53,7 @@ kafka_common = {
     # is incompatible with its own dep on avro-python3.
     "confluent_kafka>=1.5.0",
     "fastavro>=1.2.0",
+    "kafka-python==2.0.2"
 }
 
 sql_common = {

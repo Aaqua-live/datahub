@@ -16,6 +16,10 @@ from datahub.ingestion.transformer.mark_dataset_status import MarkDatasetStatus
 from datahub.ingestion.transformer.remove_dataset_ownership import (
     SimpleRemoveDatasetOwnership,
 )
+from datahub.ingestion.transformer.enrich_kafka_transformer import (
+    AddKafkaConsumersTransformer,
+    # AddDomainTagsTransformer,
+)
 
 transform_registry = Registry[Transformer]()
 
@@ -31,3 +35,6 @@ transform_registry.register("pattern_add_dataset_ownership", PatternAddDatasetOw
 
 transform_registry.register("add_dataset_tags", AddDatasetTags)
 transform_registry.register("simple_add_dataset_tags", SimpleAddDatasetTags)
+
+transform_registry.register("add_kafka_consumers", AddKafkaConsumersTransformer)
+# transform_registry.register("add_domain_tags", AddDomainTagsTransformer)
