@@ -12,7 +12,7 @@ source:
         sasl.password: "password"
       schema_registry_url: "***REMOVED***"
       schema_registry_config:
-        basic.auth.user.info: "***REMOVED***"
+        basic.auth.user.info: "username:password"
 
     topic_patterns:
       allow:
