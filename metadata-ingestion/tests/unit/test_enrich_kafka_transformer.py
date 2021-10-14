@@ -137,17 +137,6 @@ def test_convert_to_kafka_python():
 
 
 def test_invalid_config_raises_error():
-    config_dict = {
-        "connection": {
-            "bootstrap": "localhost:9092",
-            "consumer_config": {
-                "security.protocol": "SASL_SSL",
-                "sasl.mechanism": "PLAIN",
-                "sasl.username": "username",
-                "sasl.password": "password",
-            },
-        }
-    }
     invalid_conn = {"conn": {}}
     with pytest.raises(pydantic.ValidationError, match="extra fields not permitted"):
         AddKafkaConsumersConfig.parse_obj(invalid_conn)
