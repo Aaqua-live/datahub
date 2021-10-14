@@ -19,6 +19,7 @@ from datahub.ingestion.transformer.remove_dataset_ownership import (
     SimpleRemoveDatasetOwnership,
 )
 
+
 def make_generic_dataset():
     return models.MetadataChangeEventClass(
         proposedSnapshot=models.DatasetSnapshotClass(
