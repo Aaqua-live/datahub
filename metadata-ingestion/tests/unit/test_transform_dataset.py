@@ -18,27 +18,11 @@ from datahub.ingestion.transformer.mark_dataset_status import MarkDatasetStatus
 from datahub.ingestion.transformer.remove_dataset_ownership import (
     SimpleRemoveDatasetOwnership,
 )
-from datahub.ingestion.transformer.enrich_kafka_transformer import (
-    AddKafkaConsumersTransformer,
-)
-from unittest.mock import MagicMock, patch
-
 
 def make_generic_dataset():
     return models.MetadataChangeEventClass(
         proposedSnapshot=models.DatasetSnapshotClass(
             urn="urn:li:dataset:(urn:li:dataPlatform:bigquery,example1,PROD)",
-            aspects=[
-                models.StatusClass(removed=False),
-            ],
-        ),
-    )
-
-
-def make_kafka_dataset(topic_name):
-    return models.MetadataChangeEventClass(
-        proposedSnapshot=models.DatasetSnapshotClass(
-            urn=f"urn:li:dataset:(urn:li:dataPlatform:kafka,{topic_name},PROD)",
             aspects=[
                 models.StatusClass(removed=False),
             ],
@@ -449,92 +433,3 @@ def test_pattern_dataset_ownership_with_invalid_type_transformation(mock_time):
             },
             PipelineContext(run_id="test"),
         )
-
-
-@patch(
-    "datahub.ingestion.transformer.enrich_kafka_transformer.KafkaAdminClient.list_consumer_groups"
-)
-@patch(
-    "datahub.ingestion.transformer.enrich_kafka_transformer.KafkaAdminClient.describe_consumer_groups"
-)
-@patch("datahub.ingestion.transformer.enrich_kafka_transformer.KafkaAdminClient")
-def test_enrich_kafka_transformer_with_valid_consumers(
-    patch_client,
-    patch_client_describe_consumer_groups,
-    patch_client_list_consumer_groups,
-    mock_time,
-    get_kafka_connection_props,
-    mock_list_consumer_groups,
-    mock_describe_consumer_groups_1_consumer,
-    mock_describe_consumer_groups_2_consumer,
-):
-    input = make_kafka_dataset("test-topic-1")
-    patch_client.return_value = patch_client
-    patch_client_list_consumer_groups.return_value = mock_list_consumer_groups
-    patch_client_describe_consumer_groups.return_value = (
-        mock_describe_consumer_groups_1_consumer
-    )
-
-    transformer = AddKafkaConsumersTransformer.create(
-        get_kafka_connection_props,
-        PipelineContext(run_id="test"),
-    )
-
-    output = list(transformer.transform([RecordEnvelope(input, metadata={})]))
-    assert len(output) == 1
-
-    # check if properties were added
-    properties_aspect = builder.get_aspect_if_available(
-        output[0].record, models.DatasetPropertiesClass
-    )
-    assert "consumers" in properties_aspect.customProperties
-    assert properties_aspect.customProperties["consumers"] == "consumer_group_2"
-
-    patch_client_describe_consumer_groups.return_value = (
-        mock_describe_consumer_groups_2_consumer
-    )
-
-    transformer = AddKafkaConsumersTransformer.create(
-        get_kafka_connection_props,
-        PipelineContext(run_id="test"),
-    )
-    output = list(transformer.transform([RecordEnvelope(input, metadata={})]))
-    assert len(output) == 1
-
-    # check if multiple consumers were added
-    properties_aspect = builder.get_aspect_if_available(
-        output[0].record, models.DatasetPropertiesClass
-    )
-    assert "consumers" in properties_aspect.customProperties
-    assert len(properties_aspect.customProperties["consumers"].split(",")) == 2
-    assert (
-        properties_aspect.customProperties["consumers"]
-        == "consumer_group_2, consumer_group_3"
-    )
-
-@patch(
-    "datahub.ingestion.transformer.enrich_kafka_transformer.KafkaAdminClient.list_consumer_groups"
-)
-@patch("datahub.ingestion.transformer.enrich_kafka_transformer.KafkaAdminClient")
-def test_enrich_kafka_transformer_with_no_consumers(
-    patch_client,
-    patch_client_list_consumer_groups,
-    mock_time,
-    get_kafka_connection_props,
-):
-    input = make_kafka_dataset("test-topic-3")
-    patch_client.return_value = patch_client
-    patch_client_list_consumer_groups.return_value = []
-    transformer = AddKafkaConsumersTransformer.create(
-        get_kafka_connection_props,
-        PipelineContext(run_id="test"),
-    )
-
-    output = list(transformer.transform([RecordEnvelope(input, metadata={})]))
-    assert len(output) == 1
-
-    # check if properties exist
-    properties_aspect = builder.get_aspect_if_available(
-        output[0].record, models.DatasetPropertiesClass
-    )
-    assert properties_aspect is None

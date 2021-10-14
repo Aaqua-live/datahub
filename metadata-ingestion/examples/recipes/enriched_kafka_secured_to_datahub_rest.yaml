@@ -10,7 +10,7 @@ source:
         sasl.mechanism: "PLAIN"
         sasl.username: "username"
         sasl.password: "password"
-      schema_registry_url: "***REMOVED***"
+      schema_registry_url: "https://schema-registry.confluent.cloud"
       schema_registry_config:
         basic.auth.user.info: "username:password"
 

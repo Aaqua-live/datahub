@@ -12,6 +12,7 @@ from datahub.metadata.schema_classes import (
     DatasetSnapshotClass,
     MetadataChangeEventClass,
 )
+from pydantic.class_validators import validator
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -20,6 +21,24 @@ logger.setLevel(logging.INFO)
 class AddKafkaConsumersConfig(ConfigModel):
     connection: KafkaConsumerConnectionConfig = KafkaConsumerConnectionConfig()
     replace_existing: bool = False
+
+    @validator("connection", pre=True)
+    def validate_consumer_config(cls, conn):
+        assert "consumer_config" in conn, "consumer_config is missing in connection"
+        assert (
+            "security.protocol" in conn["consumer_config"]
+        ), "security.protocol is missing in consumer_config"
+        assert (
+            "sasl.mechanism" in conn["consumer_config"]
+        ), "sasl.mechanism is missing in consumer_config"
+        if conn["consumer_config"]["sasl.mechanism"] == "PLAIN":
+            assert (
+                "sasl.username" in conn["consumer_config"]
+            ), "sasl.username is missing in consumer_config"
+            assert (
+                "sasl.password" in conn["consumer_config"]
+            ), "sasl.password is missing in consumer_config"
+        return conn
 
 
 class AddKafkaConsumersTransformer(DatasetTransformer):
@@ -35,21 +54,7 @@ class AddKafkaConsumersTransformer(DatasetTransformer):
         self.ctx = ctx
         self.config = config
         self.admin_client = KafkaAdminClient(
-            **{
-                "bootstrap_servers": self.config.connection.bootstrap,
-                "security_protocol": self.config.connection.consumer_config[
-                    "security.protocol"
-                ],
-                "sasl_mechanism": self.config.connection.consumer_config[
-                    "sasl.mechanism"
-                ],
-                "sasl_plain_username": self.config.connection.consumer_config[
-                    "sasl.username"
-                ],
-                "sasl_plain_password": self.config.connection.consumer_config[
-                    "sasl.password"
-                ],
-            }
+            **AddKafkaConsumersTransformer.convert_to_kafka_python(self.config.connection.dict())
         )
         logger.info("Finished creating Admin Client")
         self.consumer_topics = dict()
@@ -61,6 +66,23 @@ class AddKafkaConsumersTransformer(DatasetTransformer):
     ) -> "AddKafkaConsumersTransformer":
         config = AddKafkaConsumersConfig.parse_obj(config_dict)
         return cls(config, ctx)
+
+    @staticmethod
+    def convert_to_kafka_python(conn) -> dict:
+        kafka_python_conn = dict()
+        kafka_python_conn["bootstrap_servers"] = conn["bootstrap"]
+        kafka_python_conn["security_protocol"] = conn["consumer_config"][
+            "security.protocol"
+        ]
+        kafka_python_conn["sasl_mechanism"] = conn["consumer_config"]["sasl.mechanism"]
+        if conn["consumer_config"]["sasl.mechanism"] == "PLAIN":
+            kafka_python_conn["sasl_plain_username"] = conn["consumer_config"][
+                "sasl.username"
+            ]
+            kafka_python_conn["sasl_plain_password"] = conn["consumer_config"][
+                "sasl.password"
+            ]
+        return kafka_python_conn
 
     def fetch_consumer_info(self) -> None:
         consumer_groups = self.admin_client.list_consumer_groups()
