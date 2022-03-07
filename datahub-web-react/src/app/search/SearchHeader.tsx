@@ -8,13 +8,14 @@ import { ManageAccount } from '../shared/ManageAccount';
 import { AutoCompleteResultForEntity, EntityType } from '../../types.generated';
 import EntityRegistry from '../entity/EntityRegistry';
 import { ANTD_GRAY } from '../entity/shared/constants';
+import { AdminHeaderLinks } from '../shared/admin/AdminHeaderLinks';
 
 const { Header } = Layout;
 
 const styles = {
     header: {
         position: 'fixed',
-        zIndex: 1,
+        zIndex: 10,
         width: '100%',
         lineHeight: '20px',
         padding: '0px 20px',
@@ -90,6 +91,7 @@ export const SearchHeader = ({
                 />
             </LogoSearchContainer>
             <NavGroup>
+                <AdminHeaderLinks />
                 <ManageAccount urn={authenticatedUserUrn} pictureLink={authenticatedUserPictureLink || ''} />
             </NavGroup>
         </Header>

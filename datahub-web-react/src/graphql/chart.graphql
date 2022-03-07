@@ -4,32 +4,12 @@ query getChart($urn: String!) {
         type
         tool
         chartId
-        info {
+        platform {
+            ...platformFields
+        }
+        properties {
             name
             description
-            inputs {
-                urn
-                name
-                origin
-                description
-                platform {
-                    name
-                    info {
-                        logoUrl
-                    }
-                }
-                platformNativeType
-                tags
-                ownership {
-                    ...ownershipFields
-                }
-                downstreamLineage {
-                    ...downstreamRelationshipFields
-                }
-                upstreamLineage {
-                    ...upstreamRelationshipFields
-                }
-            }
             externalUrl
             type
             access
@@ -55,83 +35,32 @@ query getChart($urn: String!) {
         globalTags {
             ...globalTagsFields
         }
-        downstreamLineage {
-            ...downstreamRelationshipFields
-        }
-        upstreamLineage {
-            ...upstreamRelationshipFields
-        }
         editableProperties {
             description
+        }
+        institutionalMemory {
+            ...institutionalMemoryFields
+        }
+        glossaryTerms {
+            ...glossaryTerms
+        }
+        domain {
+            ...entityDomain
+        }
+        inputs: relationships(input: { types: ["Consumes"], direction: OUTGOING, start: 0, count: 100 }) {
+            ...fullRelationshipResults
+        }
+        dashboards: relationships(input: { types: ["Contains"], direction: INCOMING, start: 0, count: 100 }) {
+            ...fullRelationshipResults
+        }
+        container {
+            ...entityContainer
         }
     }
 }
 
-mutation updateChart($input: ChartUpdateInput!) {
-    updateChart(input: $input) {
+mutation updateChart($urn: String!, $input: ChartUpdateInput!) {
+    updateChart(urn: $urn, input: $input) {
         urn
-        type
-        tool
-        chartId
-        info {
-            name
-            description
-            inputs {
-                urn
-                name
-                origin
-                description
-                platform {
-                    name
-                    info {
-                        logoUrl
-                    }
-                }
-                platformNativeType
-                tags
-                ownership {
-                    ...ownershipFields
-                }
-                downstreamLineage {
-                    ...downstreamRelationshipFields
-                }
-                upstreamLineage {
-                    ...upstreamRelationshipFields
-                }
-            }
-            externalUrl
-            type
-            access
-            lastRefreshed
-            lastModified {
-                time
-            }
-            created {
-                time
-            }
-            customProperties {
-                key
-                value
-            }
-        }
-        query {
-            rawQuery
-            type
-        }
-        editableProperties {
-            description
-        }
-        ownership {
-            ...ownershipFields
-        }
-        globalTags {
-            ...globalTagsFields
-        }
-        downstreamLineage {
-            ...downstreamRelationshipFields
-        }
-        upstreamLineage {
-            ...upstreamRelationshipFields
-        }
     }
 }

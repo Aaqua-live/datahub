@@ -1,9 +1,9 @@
 package com.linkedin.metadata.dao.producer;
 
+import com.datahub.util.exception.ModelConversionException;
 import com.google.common.annotations.VisibleForTesting;
 import com.linkedin.common.urn.Urn;
 import com.linkedin.metadata.EventUtils;
-import com.linkedin.metadata.dao.exception.ModelConversionException;
 import com.linkedin.metadata.event.EntityEventProducer;
 import com.linkedin.metadata.models.AspectSpec;
 import com.linkedin.metadata.snapshot.Snapshot;
@@ -14,6 +14,7 @@ import com.linkedin.mxe.SystemMetadata;
 import com.linkedin.mxe.TopicConvention;
 import com.linkedin.mxe.TopicConventionImpl;
 import com.linkedin.mxe.Topics;
+import io.opentelemetry.extension.annotations.WithSpan;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
@@ -64,6 +65,7 @@ public class EntityKafkaMetadataEventProducer implements EntityEventProducer {
   }
 
   @Override
+  @WithSpan
   public void produceMetadataAuditEvent(@Nonnull Urn urn, @Nullable Snapshot oldSnapshot, @Nonnull Snapshot newSnapshot,
       @Nullable SystemMetadata oldSystemMetadata, @Nullable SystemMetadata newSystemMetadata,
       MetadataAuditOperation operation) {
@@ -86,7 +88,8 @@ public class EntityKafkaMetadataEventProducer implements EntityEventProducer {
 
     GenericRecord record;
     try {
-      log.debug(String.format(String.format("Converting Pegasus snapshot to Avro snapshot urn %s", urn),
+      log.debug(String.format("Converting Pegasus snapshot to Avro snapshot urn %s\nMetadataAuditEvent: %s",
+          urn,
           metadataAuditEvent.toString()));
       record = EventUtils.pegasusToAvroMAE(metadataAuditEvent);
     } catch (IOException e) {
@@ -114,11 +117,13 @@ public class EntityKafkaMetadataEventProducer implements EntityEventProducer {
   }
 
   @Override
+  @WithSpan
   public void produceMetadataChangeLog(@Nonnull final Urn urn, @Nonnull AspectSpec aspectSpec,
       @Nonnull final MetadataChangeLog metadataChangeLog) {
     GenericRecord record;
     try {
-      log.debug(String.format(String.format("Converting Pegasus snapshot to Avro snapshot urn %s", urn),
+      log.debug(String.format("Converting Pegasus snapshot to Avro snapshot urn %s\nMetadataChangeLog: %s",
+          urn,
           metadataChangeLog.toString()));
       record = EventUtils.pegasusToAvroMCL(metadataChangeLog);
     } catch (IOException e) {

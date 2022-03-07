@@ -12,19 +12,29 @@ query getBrowseResults($input: BrowseInput!) {
             ... on Dataset {
                 name
                 origin
-                description
-                platform {
-                    name
-                    info {
-                        logoUrl
-                    }
+                properties {
+                    description
                 }
-                tags
+                editableProperties {
+                    description
+                }
+                platform {
+                    ...platformFields
+                }
                 ownership {
                     ...ownershipFields
                 }
                 globalTags {
                     ...globalTagsFields
+                }
+                glossaryTerms {
+                    ...glossaryTerms
+                }
+                subTypes {
+                    typeNames
+                }
+                domain {
+                    ...entityDomain
                 }
             }
             ... on Dashboard {
@@ -32,7 +42,7 @@ query getBrowseResults($input: BrowseInput!) {
                 type
                 tool
                 dashboardId
-                info {
+                properties {
                     name
                     description
                     externalUrl
@@ -41,11 +51,23 @@ query getBrowseResults($input: BrowseInput!) {
                         time
                     }
                 }
+                editableProperties {
+                    description
+                }
                 ownership {
                     ...ownershipFields
                 }
                 globalTags {
                     ...globalTagsFields
+                }
+                glossaryTerms {
+                    ...glossaryTerms
+                }
+                platform {
+                    ...platformFields
+                }
+                domain {
+                    ...entityDomain
                 }
             }
             ... on GlossaryTerm {
@@ -69,7 +91,7 @@ query getBrowseResults($input: BrowseInput!) {
                 type
                 tool
                 chartId
-                info {
+                properties {
                     name
                     description
                     externalUrl
@@ -79,11 +101,23 @@ query getBrowseResults($input: BrowseInput!) {
                         time
                     }
                 }
+                editableProperties {
+                    description
+                }
                 ownership {
                     ...ownershipFields
                 }
                 globalTags {
                     ...globalTagsFields
+                }
+                glossaryTerms {
+                    ...glossaryTerms
+                }
+                platform {
+                    ...platformFields
+                }
+                domain {
+                    ...entityDomain
                 }
             }
             ... on DataFlow {
@@ -92,16 +126,28 @@ query getBrowseResults($input: BrowseInput!) {
                 orchestrator
                 flowId
                 cluster
-                info {
+                properties {
                     name
                     description
                     project
+                }
+                editableProperties {
+                    description
                 }
                 ownership {
                     ...ownershipFields
                 }
                 globalTags {
                     ...globalTagsFields
+                }
+                glossaryTerms {
+                    ...glossaryTerms
+                }
+                platform {
+                    ...platformFields
+                }
+                domain {
+                    ...entityDomain
                 }
             }
             ... on MLFeatureTable {
@@ -122,17 +168,13 @@ query getBrowseResults($input: BrowseInput!) {
                     ...ownershipFields
                 }
                 platform {
-                    name
-                    info {
-                        logoUrl
-                    }
+                    ...platformFields
                 }
             }
             ... on MLModel {
                 name
                 origin
                 description
-                tags
                 ownership {
                     ...ownershipFields
                 }
@@ -140,10 +182,7 @@ query getBrowseResults($input: BrowseInput!) {
                     ...globalTagsFields
                 }
                 platform {
-                    name
-                    info {
-                        logoUrl
-                    }
+                    ...platformFields
                 }
             }
             ... on MLModelGroup {
@@ -154,10 +193,7 @@ query getBrowseResults($input: BrowseInput!) {
                     ...ownershipFields
                 }
                 platform {
-                    name
-                    info {
-                        logoUrl
-                    }
+                    ...platformFields
                 }
             }
         }

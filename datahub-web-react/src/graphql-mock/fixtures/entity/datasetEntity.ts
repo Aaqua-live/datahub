@@ -1,28 +1,29 @@
 import * as faker from 'faker';
-import { DataPlatform, Dataset, EntityType, FabricType, OwnershipType, PlatformType } from '../../../types.generated';
+// import { generatePlatform } from 'generateDataPlatform';
 import kafkaLogo from '../../../images/kafkalogo.png';
 import s3Logo from '../../../images/s3.png';
 import snowflakeLogo from '../../../images/snowflakelogo.png';
 import bigqueryLogo from '../../../images/bigquerylogo.png';
+import { DataPlatform, Dataset, EntityType, FabricType, OwnershipType, PlatformType } from '../../../types.generated';
 import { findUserByUsername } from '../searchResult/userSearchResult';
 
-const platformLogo = {
+export const platformLogo = {
     kafka: kafkaLogo,
     s3: s3Logo,
     snowflake: snowflakeLogo,
     bigquery: bigqueryLogo,
 };
 
-const generatePlatform = ({ platform, urn }): DataPlatform => {
+export const generatePlatform = ({ platform, urn }): DataPlatform => {
     return {
         urn,
         type: EntityType.Dataset,
         name: platform,
-        info: {
+        properties: {
             type: PlatformType.Others,
             datasetNameDelimiter: '',
             logoUrl: platformLogo[platform],
-            __typename: 'DataPlatformInfo',
+            __typename: 'DataPlatformProperties',
         },
         __typename: 'DataPlatform',
     };
@@ -53,7 +54,6 @@ export const datasetEntity = ({
         uri: null,
         platform: generatePlatform({ platform, urn: platformURN }),
         platformNativeType: null,
-        tags: [],
         properties: null,
         editableProperties: null,
         editableSchemaMetadata: null,
@@ -82,5 +82,6 @@ export const datasetEntity = ({
         schemaMetadata: null,
         previousSchemaMetadata: null,
         __typename: 'Dataset',
+        subTypes: null,
     };
 };

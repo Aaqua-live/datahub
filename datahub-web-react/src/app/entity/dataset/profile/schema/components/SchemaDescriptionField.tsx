@@ -1,4 +1,4 @@
-import { Typography, message, Tag } from 'antd';
+import { Typography, message, Button } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import React, { useState } from 'react';
 import styled from 'styled-components';
@@ -8,15 +8,19 @@ import { UpdateDatasetMutation } from '../../../../../../graphql/dataset.generat
 import UpdateDescriptionModal from '../../../../shared/components/legacy/DescriptionModal';
 import StripMarkdownText, { removeMarkdown } from '../../../../shared/components/styled/StripMarkdownText';
 import MarkdownViewer from '../../../../shared/components/legacy/MarkdownViewer';
+import SchemaEditableContext from '../../../../../shared/SchemaEditableContext';
+import { useEntityData } from '../../../../shared/EntityContext';
+import analytics, { EventType, EntityActionType } from '../../../../../analytics';
 
 const EditIcon = styled(EditOutlined)`
     cursor: pointer;
     display: none;
 `;
 
-const AddNewDescription = styled(Tag)`
-    cursor: pointer;
+const AddNewDescription = styled(Button)`
     display: none;
+    margin: -4px;
+    width: 140px;
 `;
 
 const ExpandedActions = styled.div`
@@ -76,64 +80,69 @@ type Props = {
     onUpdate: (
         description: string,
     ) => Promise<FetchResult<UpdateDatasetMutation, Record<string, any>, Record<string, any>> | void>;
-    editable?: boolean;
     isEdited?: boolean;
 };
 
 const ABBREVIATED_LIMIT = 80;
 
-export default function DescriptionField({
-    description,
-    onUpdate,
-    editable = true,
-    isEdited = false,
-    original,
-}: Props) {
+export default function DescriptionField({ description, onUpdate, isEdited = false, original }: Props) {
     const [showAddModal, setShowAddModal] = useState(false);
     const overLimit = removeMarkdown(description).length > 80;
     const [expanded, setExpanded] = useState(!overLimit);
-
+    const isSchemaEditable = React.useContext(SchemaEditableContext);
     const onCloseModal = () => setShowAddModal(false);
+    const { urn, entityType } = useEntityData();
+
+    const sendAnalytics = () => {
+        analytics.event({
+            type: EventType.EntityActionEvent,
+            actionType: EntityActionType.UpdateSchemaDescription,
+            entityType,
+            entityUrn: urn,
+        });
+    };
 
     const onUpdateModal = async (desc: string | null) => {
-        // message.loading({ content: 'Updating...' });
+        message.loading({ content: 'Updating...' });
         try {
             await onUpdate(desc || '');
-            // message.destroy();
-            // message.success({ content: 'Updated!', duration: 2 });
-        } catch (e) {
             message.destroy();
-            message.error({ content: `Update Failed! \n ${e.message || ''}`, duration: 2 });
+            message.success({ content: 'Updated!', duration: 2 });
+            sendAnalytics();
+        } catch (e: unknown) {
+            message.destroy();
+            if (e instanceof Error) message.error({ content: `Update Failed! \n ${e.message || ''}`, duration: 2 });
         }
         onCloseModal();
     };
 
     const EditButton =
-        (editable && description && <EditIcon twoToneColor="#52c41a" onClick={() => setShowAddModal(true)} />) ||
+        (isSchemaEditable && description && (
+            <EditIcon twoToneColor="#52c41a" onClick={() => setShowAddModal(true)} />
+        )) ||
         undefined;
 
+    const showAddDescription = isSchemaEditable && !description;
+
     return (
-        <DescriptionContainer
-            onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-            }}
-        >
+        <DescriptionContainer>
             {expanded ? (
                 <>
-                    <DescriptionText source={description} />
-                    <ExpandedActions>
-                        {overLimit && (
-                            <ReadLessText
-                                onClick={() => {
-                                    setExpanded(false);
-                                }}
-                            >
-                                Read Less
-                            </ReadLessText>
-                        )}
-                        {EditButton}
-                    </ExpandedActions>
+                    {!!description && <DescriptionText source={description} />}
+                    {!!description && (
+                        <ExpandedActions>
+                            {overLimit && (
+                                <ReadLessText
+                                    onClick={() => {
+                                        setExpanded(false);
+                                    }}
+                                >
+                                    Read Less
+                                </ReadLessText>
+                            )}
+                            {EditButton}
+                        </ExpandedActions>
+                    )}
                 </>
             ) : (
                 <>
@@ -156,7 +165,7 @@ export default function DescriptionField({
                     </StripMarkdownText>
                 </>
             )}
-            {editable && isEdited && <EditedLabel>(edited)</EditedLabel>}
+            {isSchemaEditable && isEdited && <EditedLabel>(edited)</EditedLabel>}
             {showAddModal && (
                 <div>
                     <UpdateDescriptionModal
@@ -169,8 +178,8 @@ export default function DescriptionField({
                     />
                 </div>
             )}
-            {editable && !description && (
-                <AddNewDescription color="success" onClick={() => setShowAddModal(true)}>
+            {showAddDescription && (
+                <AddNewDescription type="text" onClick={() => setShowAddModal(true)}>
                     + Add Description
                 </AddNewDescription>
             )}

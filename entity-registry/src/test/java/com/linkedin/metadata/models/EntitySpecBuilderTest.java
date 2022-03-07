@@ -9,6 +9,7 @@ import com.datahub.test.invalid.InvalidSearchableFieldType;
 import com.datahub.test.invalid.MissingAspectAnnotation;
 import com.datahub.test.invalid.MissingRelationshipName;
 import com.linkedin.data.schema.PathSpec;
+import com.linkedin.data.template.RecordTemplate;
 import com.linkedin.metadata.models.annotation.SearchableAnnotation;
 import java.util.List;
 import java.util.Map;
@@ -24,28 +25,28 @@ public class EntitySpecBuilderTest {
   @Test
   public void testBuildAspectSpecValidationAspectMissingAnnotation() {
     assertThrows(ModelValidationException.class, () ->
-      new EntitySpecBuilder().buildAspectSpec(new MissingAspectAnnotation().schema())
+      new EntitySpecBuilder().buildAspectSpec(new MissingAspectAnnotation().schema(), RecordTemplate.class)
     );
   }
 
   @Test
   public void testBuildAspectSpecValidationInvalidSearchableFieldType() {
     assertThrows(ModelValidationException.class, () ->
-        new EntitySpecBuilder().buildAspectSpec(new InvalidSearchableFieldType().schema())
+        new EntitySpecBuilder().buildAspectSpec(new InvalidSearchableFieldType().schema(), RecordTemplate.class)
     );
   }
 
   @Test
   public void testBuildAspectSpecValidationDuplicateSearchableFields() {
     assertThrows(ModelValidationException.class, () ->
-        new EntitySpecBuilder().buildAspectSpec(new DuplicateSearchableFields().schema())
+        new EntitySpecBuilder().buildAspectSpec(new DuplicateSearchableFields().schema(), RecordTemplate.class)
     );
   }
 
   @Test
   public void testBuildAspectSpecValidationMissingRelationshipName() {
     assertThrows(ModelValidationException.class, () ->
-        new EntitySpecBuilder().buildAspectSpec(new MissingRelationshipName().schema())
+        new EntitySpecBuilder().buildAspectSpec(new MissingRelationshipName().schema(), RecordTemplate.class)
     );
   }
 
@@ -114,7 +115,12 @@ public class EntitySpecBuilderTest {
     assertEquals(new TestEntityInfo().schema().getFullName(), testEntityInfo.getPegasusSchema().getFullName());
 
     // Assert on Searchable Fields
-    assertEquals(7, testEntityInfo.getSearchableFieldSpecs().size());
+    assertEquals(8, testEntityInfo.getSearchableFieldSpecs().size());
+    assertEquals("customProperties", testEntityInfo.getSearchableFieldSpecMap().get(
+        new PathSpec("customProperties").toString()).getSearchableAnnotation().getFieldName());
+    assertEquals(SearchableAnnotation.FieldType.KEYWORD, testEntityInfo.getSearchableFieldSpecMap().get(
+        new PathSpec("customProperties").toString())
+        .getSearchableAnnotation().getFieldType());
     assertEquals("textFieldOverride", testEntityInfo.getSearchableFieldSpecMap().get(
         new PathSpec("textField").toString()).getSearchableAnnotation().getFieldName());
     assertEquals(SearchableAnnotation.FieldType.TEXT, testEntityInfo.getSearchableFieldSpecMap().get(

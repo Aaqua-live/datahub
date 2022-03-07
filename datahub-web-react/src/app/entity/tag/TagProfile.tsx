@@ -11,6 +11,7 @@ import { navigateToSearchUrl } from '../../search/utils/navigateToSearchUrl';
 import { Message } from '../../shared/Message';
 import { AvatarsGroup } from '../../shared/avatar';
 import { useEntityRegistry } from '../../useEntityRegistry';
+import { decodeUrn } from '../shared/utils';
 
 const PageContainer = styled.div`
     padding: 32px 100px;
@@ -78,13 +79,18 @@ type TagPageParams = {
  * Responsible for displaying metadata about a tag
  */
 export default function TagProfile() {
-    const { urn } = useParams<TagPageParams>();
+    const { urn: encodedUrn } = useParams<TagPageParams>();
+    const urn = decodeUrn(encodedUrn);
+
     const { loading, error, data } = useGetTagQuery({ variables: { urn } });
     const entityRegistry = useEntityRegistry();
     const history = useHistory();
 
+    const entityAndSchemaQuery = `tags:"${data?.tag?.name}" OR fieldTags:"${data?.tag?.name}" OR editedFieldTags:"${data?.tag?.name}"`;
+    const entityQuery = `tags:"${data?.tag?.name}"`;
+
     const allSearchResultsByType = useGetAllEntitySearchResults({
-        query: `tags:"${data?.tag?.name}"`,
+        query: entityAndSchemaQuery,
         start: 0,
         count: 1,
         filters: [],
@@ -119,11 +125,7 @@ export default function TagProfile() {
                                 <div>
                                     <CreatedByLabel>Created by</CreatedByLabel>
                                 </div>
-                                <AvatarsGroup
-                                    owners={data?.tag?.ownership?.owners}
-                                    entityRegistry={entityRegistry}
-                                    size="large"
-                                />
+                                <AvatarsGroup owners={data?.tag?.ownership?.owners} entityRegistry={entityRegistry} />
                             </div>
                         </div>
                         <StatsBox>
@@ -152,9 +154,11 @@ export default function TagProfile() {
                                                 onClick={() =>
                                                     navigateToSearchUrl({
                                                         type: type as EntityType,
-                                                        query: `tags:"${data?.tag?.name}"`,
+                                                        query:
+                                                            type === EntityType.Dataset
+                                                                ? entityAndSchemaQuery
+                                                                : entityQuery,
                                                         history,
-                                                        entityRegistry,
                                                     })
                                                 }
                                             >

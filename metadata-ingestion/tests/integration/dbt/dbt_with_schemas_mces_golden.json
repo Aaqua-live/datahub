@@ -8,6 +8,11 @@
                 {
                     "com.linkedin.pegasus2avro.dataset.DatasetProperties": {
                         "customProperties": {
+                            "business_owner": "jdoe.last@gmail.com",
+                            "data_governance.team_owner": "Finance",
+                            "has_pii": "True",
+                            "int_property": "1",
+                            "double_property": "2.5",
                             "node_type": "model",
                             "materialization": "ephemeral",
                             "dbt_file_path": "models/transform/customer_details.sql",
@@ -19,7 +24,95 @@
                         "externalUrl": null,
                         "description": null,
                         "uri": null,
-                        "tags": []
+                        "tags": [
+                            "dbt:test_tag"
+                        ]
+                    }
+                },
+                {
+                    "com.linkedin.pegasus2avro.common.Ownership": {
+                        "owners": [
+                            {
+                                "owner": "urn:li:corpuser:@alice2",
+                                "type": "DATAOWNER",
+                                "source": null
+                            },
+                            {
+                                "owner": "urn:li:corpuser:jdoe.last@gmail.com",
+                                "type": "DATAOWNER",
+                                "source": {
+                                    "type": "SOURCE_CONTROL",
+                                    "url": null
+                                }
+                            }
+                        ],
+                        "lastModified": {
+                            "time": 0,
+                            "actor": "urn:li:corpuser:unknown",
+                            "impersonator": null
+                        }
+                    }
+                },
+                {
+                    "com.linkedin.pegasus2avro.common.GlobalTags": {
+                        "tags": [
+                            {
+                                "tag": "urn:li:tag:dbt:has_pii_test"
+                            },
+                            {
+                                "tag": "urn:li:tag:dbt:int_meta_property"
+                            },
+                            {
+                                "tag": "urn:li:tag:dbt:test_tag"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "com.linkedin.pegasus2avro.common.GlossaryTerms": {
+                        "terms": [
+                            {
+                                "urn": "urn:li:glossaryTerm:Finance_test"
+                            },
+                            {
+                                "urn": "urn:li:glossaryTerm:double_meta_property"
+                            }
+                        ],
+                        "auditStamp": {
+                            "time": 1615443388097,
+                            "actor": "urn:li:corpuser:datahub",
+                            "impersonator": null
+                        }
+                    }
+                },
+                {
+                    "com.linkedin.pegasus2avro.schema.SchemaMetadata": {
+                        "schemaName": "model.sample_dbt.customer_details",
+                        "platform": "urn:li:dataPlatform:postgres",
+                        "version": 0,
+                        "created": {
+                            "time": 0,
+                            "actor": "urn:li:corpuser:unknown",
+                            "impersonator": null
+                        },
+                        "lastModified": {
+                            "time": 0,
+                            "actor": "urn:li:corpuser:unknown",
+                            "impersonator": null
+                        },
+                        "deleted": null,
+                        "dataset": null,
+                        "cluster": null,
+                        "hash": "",
+                        "platformSchema": {
+                            "com.linkedin.pegasus2avro.schema.MySqlDDL": {
+                                "tableSchema": ""
+                            }
+                        },
+                        "fields": [],
+                        "primaryKeys": null,
+                        "foreignKeysSpecs": null,
+                        "foreignKeys": null
                     }
                 },
                 {
@@ -54,35 +147,6 @@
                             }
                         ]
                     }
-                },
-                {
-                    "com.linkedin.pegasus2avro.schema.SchemaMetadata": {
-                        "schemaName": "model.sample_dbt.customer_details",
-                        "platform": "urn:li:dataPlatform:postgres",
-                        "version": 0,
-                        "created": {
-                            "time": 0,
-                            "actor": "urn:li:corpuser:unknown",
-                            "impersonator": null
-                        },
-                        "lastModified": {
-                            "time": 0,
-                            "actor": "urn:li:corpuser:unknown",
-                            "impersonator": null
-                        },
-                        "deleted": null,
-                        "dataset": null,
-                        "cluster": null,
-                        "hash": "",
-                        "platformSchema": {
-                            "com.linkedin.pegasus2avro.schema.MySqlDDL": {
-                                "tableSchema": ""
-                            }
-                        },
-                        "fields": [],
-                        "primaryKeys": null,
-                        "foreignKeysSpecs": null
-                    }
                 }
             ]
         }
@@ -91,6 +155,8 @@
     "systemMetadata": {
         "lastObserved": 1615443388097,
         "runId": "dbt-test-with-schemas",
+        "registryName": null,
+        "registryVersion": null,
         "properties": null
     }
 },
@@ -103,6 +169,11 @@
                 {
                     "com.linkedin.pegasus2avro.dataset.DatasetProperties": {
                         "customProperties": {
+                            "business_owner": "jdoe.last",
+                            "data_governance.team_owner": "Sales",
+                            "has_pii": "False",
+                            "int_property": "2",
+                            "double_property": "3.5",
                             "node_type": "model",
                             "materialization": "table",
                             "dbt_file_path": "models/billing/monthly_billing_with_cust.sql",
@@ -119,27 +190,22 @@
                     }
                 },
                 {
-                    "com.linkedin.pegasus2avro.dataset.UpstreamLineage": {
-                        "upstreams": [
+                    "com.linkedin.pegasus2avro.common.Ownership": {
+                        "owners": [
                             {
-                                "auditStamp": {
-                                    "time": 0,
-                                    "actor": "urn:li:corpuser:unknown",
-                                    "impersonator": null
-                                },
-                                "dataset": "urn:li:dataset:(urn:li:dataPlatform:postgres,pagila.dbt_postgres.payments_by_customer_by_month,PROD)",
-                                "type": "TRANSFORMED"
-                            },
-                            {
-                                "auditStamp": {
-                                    "time": 0,
-                                    "actor": "urn:li:corpuser:unknown",
-                                    "impersonator": null
-                                },
-                                "dataset": "urn:li:dataset:(urn:li:dataPlatform:postgres,pagila.dbt_postgres.customer_details,PROD)",
-                                "type": "TRANSFORMED"
+                                "owner": "urn:li:corpuser:jdoe.last",
+                                "type": "DATAOWNER",
+                                "source": {
+                                    "type": "SOURCE_CONTROL",
+                                    "url": null
+                                }
                             }
-                        ]
+                        ],
+                        "lastModified": {
+                            "time": 0,
+                            "actor": "urn:li:corpuser:unknown",
+                            "impersonator": null
+                        }
                     }
                 },
                 {
@@ -181,7 +247,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "billing_month",
@@ -197,7 +264,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "customer_id",
@@ -213,7 +281,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "email",
@@ -229,11 +298,37 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             }
                         ],
                         "primaryKeys": null,
-                        "foreignKeysSpecs": null
+                        "foreignKeysSpecs": null,
+                        "foreignKeys": null
+                    }
+                },
+                {
+                    "com.linkedin.pegasus2avro.dataset.UpstreamLineage": {
+                        "upstreams": [
+                            {
+                                "auditStamp": {
+                                    "time": 0,
+                                    "actor": "urn:li:corpuser:unknown",
+                                    "impersonator": null
+                                },
+                                "dataset": "urn:li:dataset:(urn:li:dataPlatform:postgres,pagila.dbt_postgres.payments_by_customer_by_month,PROD)",
+                                "type": "TRANSFORMED"
+                            },
+                            {
+                                "auditStamp": {
+                                    "time": 0,
+                                    "actor": "urn:li:corpuser:unknown",
+                                    "impersonator": null
+                                },
+                                "dataset": "urn:li:dataset:(urn:li:dataPlatform:postgres,pagila.dbt_postgres.customer_details,PROD)",
+                                "type": "TRANSFORMED"
+                            }
+                        ]
                     }
                 }
             ]
@@ -243,6 +338,8 @@
     "systemMetadata": {
         "lastObserved": 1615443388097,
         "runId": "dbt-test-with-schemas",
+        "registryName": null,
+        "registryVersion": null,
         "properties": null
     }
 },
@@ -268,6 +365,139 @@
                         "description": null,
                         "uri": null,
                         "tags": []
+                    }
+                },
+                {
+                    "com.linkedin.pegasus2avro.schema.SchemaMetadata": {
+                        "schemaName": "model.sample_dbt.payments_base",
+                        "platform": "urn:li:dataPlatform:postgres",
+                        "version": 0,
+                        "created": {
+                            "time": 0,
+                            "actor": "urn:li:corpuser:unknown",
+                            "impersonator": null
+                        },
+                        "lastModified": {
+                            "time": 0,
+                            "actor": "urn:li:corpuser:unknown",
+                            "impersonator": null
+                        },
+                        "deleted": null,
+                        "dataset": null,
+                        "cluster": null,
+                        "hash": "",
+                        "platformSchema": {
+                            "com.linkedin.pegasus2avro.schema.MySqlDDL": {
+                                "tableSchema": ""
+                            }
+                        },
+                        "fields": [
+                            {
+                                "fieldPath": "amount",
+                                "jsonPath": null,
+                                "nullable": false,
+                                "description": null,
+                                "type": {
+                                    "type": {
+                                        "com.linkedin.pegasus2avro.schema.NumberType": {}
+                                    }
+                                },
+                                "nativeDataType": "numeric(5,2)",
+                                "recursive": false,
+                                "globalTags": null,
+                                "glossaryTerms": null,
+                                "isPartOfKey": false,
+                                "jsonProps": null
+                            },
+                            {
+                                "fieldPath": "customer_id",
+                                "jsonPath": null,
+                                "nullable": false,
+                                "description": null,
+                                "type": {
+                                    "type": {
+                                        "com.linkedin.pegasus2avro.schema.NumberType": {}
+                                    }
+                                },
+                                "nativeDataType": "integer",
+                                "recursive": false,
+                                "globalTags": null,
+                                "glossaryTerms": null,
+                                "isPartOfKey": false,
+                                "jsonProps": null
+                            },
+                            {
+                                "fieldPath": "payment_date",
+                                "jsonPath": null,
+                                "nullable": false,
+                                "description": null,
+                                "type": {
+                                    "type": {
+                                        "com.linkedin.pegasus2avro.schema.TimeType": {}
+                                    }
+                                },
+                                "nativeDataType": "timestamp with time zone",
+                                "recursive": false,
+                                "globalTags": null,
+                                "glossaryTerms": null,
+                                "isPartOfKey": false,
+                                "jsonProps": null
+                            },
+                            {
+                                "fieldPath": "payment_id",
+                                "jsonPath": null,
+                                "nullable": false,
+                                "description": null,
+                                "type": {
+                                    "type": {
+                                        "com.linkedin.pegasus2avro.schema.NumberType": {}
+                                    }
+                                },
+                                "nativeDataType": "integer",
+                                "recursive": false,
+                                "globalTags": null,
+                                "glossaryTerms": null,
+                                "isPartOfKey": false,
+                                "jsonProps": null
+                            },
+                            {
+                                "fieldPath": "rental_id",
+                                "jsonPath": null,
+                                "nullable": false,
+                                "description": null,
+                                "type": {
+                                    "type": {
+                                        "com.linkedin.pegasus2avro.schema.NumberType": {}
+                                    }
+                                },
+                                "nativeDataType": "integer",
+                                "recursive": false,
+                                "globalTags": null,
+                                "glossaryTerms": null,
+                                "isPartOfKey": false,
+                                "jsonProps": null
+                            },
+                            {
+                                "fieldPath": "staff_id",
+                                "jsonPath": null,
+                                "nullable": false,
+                                "description": null,
+                                "type": {
+                                    "type": {
+                                        "com.linkedin.pegasus2avro.schema.NumberType": {}
+                                    }
+                                },
+                                "nativeDataType": "integer",
+                                "recursive": false,
+                                "globalTags": null,
+                                "glossaryTerms": null,
+                                "isPartOfKey": false,
+                                "jsonProps": null
+                            }
+                        ],
+                        "primaryKeys": null,
+                        "foreignKeysSpecs": null,
+                        "foreignKeys": null
                     }
                 },
                 {
@@ -338,132 +568,6 @@
                             }
                         ]
                     }
-                },
-                {
-                    "com.linkedin.pegasus2avro.schema.SchemaMetadata": {
-                        "schemaName": "model.sample_dbt.payments_base",
-                        "platform": "urn:li:dataPlatform:postgres",
-                        "version": 0,
-                        "created": {
-                            "time": 0,
-                            "actor": "urn:li:corpuser:unknown",
-                            "impersonator": null
-                        },
-                        "lastModified": {
-                            "time": 0,
-                            "actor": "urn:li:corpuser:unknown",
-                            "impersonator": null
-                        },
-                        "deleted": null,
-                        "dataset": null,
-                        "cluster": null,
-                        "hash": "",
-                        "platformSchema": {
-                            "com.linkedin.pegasus2avro.schema.MySqlDDL": {
-                                "tableSchema": ""
-                            }
-                        },
-                        "fields": [
-                            {
-                                "fieldPath": "amount",
-                                "jsonPath": null,
-                                "nullable": false,
-                                "description": null,
-                                "type": {
-                                    "type": {
-                                        "com.linkedin.pegasus2avro.schema.NumberType": {}
-                                    }
-                                },
-                                "nativeDataType": "numeric(5,2)",
-                                "recursive": false,
-                                "globalTags": null,
-                                "glossaryTerms": null,
-                                "isPartOfKey": false
-                            },
-                            {
-                                "fieldPath": "customer_id",
-                                "jsonPath": null,
-                                "nullable": false,
-                                "description": null,
-                                "type": {
-                                    "type": {
-                                        "com.linkedin.pegasus2avro.schema.NumberType": {}
-                                    }
-                                },
-                                "nativeDataType": "integer",
-                                "recursive": false,
-                                "globalTags": null,
-                                "glossaryTerms": null,
-                                "isPartOfKey": false
-                            },
-                            {
-                                "fieldPath": "payment_date",
-                                "jsonPath": null,
-                                "nullable": false,
-                                "description": null,
-                                "type": {
-                                    "type": {
-                                        "com.linkedin.pegasus2avro.schema.TimeType": {}
-                                    }
-                                },
-                                "nativeDataType": "timestamp with time zone",
-                                "recursive": false,
-                                "globalTags": null,
-                                "glossaryTerms": null,
-                                "isPartOfKey": false
-                            },
-                            {
-                                "fieldPath": "payment_id",
-                                "jsonPath": null,
-                                "nullable": false,
-                                "description": null,
-                                "type": {
-                                    "type": {
-                                        "com.linkedin.pegasus2avro.schema.NumberType": {}
-                                    }
-                                },
-                                "nativeDataType": "integer",
-                                "recursive": false,
-                                "globalTags": null,
-                                "glossaryTerms": null,
-                                "isPartOfKey": false
-                            },
-                            {
-                                "fieldPath": "rental_id",
-                                "jsonPath": null,
-                                "nullable": false,
-                                "description": null,
-                                "type": {
-                                    "type": {
-                                        "com.linkedin.pegasus2avro.schema.NumberType": {}
-                                    }
-                                },
-                                "nativeDataType": "integer",
-                                "recursive": false,
-                                "globalTags": null,
-                                "glossaryTerms": null,
-                                "isPartOfKey": false
-                            },
-                            {
-                                "fieldPath": "staff_id",
-                                "jsonPath": null,
-                                "nullable": false,
-                                "description": null,
-                                "type": {
-                                    "type": {
-                                        "com.linkedin.pegasus2avro.schema.NumberType": {}
-                                    }
-                                },
-                                "nativeDataType": "integer",
-                                "recursive": false,
-                                "globalTags": null,
-                                "glossaryTerms": null,
-                                "isPartOfKey": false
-                            }
-                        ],
-                        "primaryKeys": null,
-                        "foreignKeysSpecs": null
-                    }
                 }
             ]
         }
@@ -472,6 +576,8 @@
     "systemMetadata": {
         "lastObserved": 1615443388097,
         "runId": "dbt-test-with-schemas",
+        "registryName": null,
+        "registryVersion": null,
         "properties": null
     }
 },
@@ -497,21 +603,6 @@
                         "description": null,
                         "uri": null,
                         "tags": []
-                    }
-                },
-                {
-                    "com.linkedin.pegasus2avro.dataset.UpstreamLineage": {
-                        "upstreams": [
-                            {
-                                "auditStamp": {
-                                    "time": 0,
-                                    "actor": "urn:li:corpuser:unknown",
-                                    "impersonator": null
-                                },
-                                "dataset": "urn:li:dataset:(urn:li:dataPlatform:postgres,pagila.dbt_postgres.an-aliased-view-for-payments,PROD)",
-                                "type": "TRANSFORMED"
-                            }
-                        ]
                     }
                 },
                 {
@@ -553,7 +644,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "billing_month",
@@ -569,7 +661,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "customer_id",
@@ -585,11 +678,28 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             }
                         ],
                         "primaryKeys": null,
-                        "foreignKeysSpecs": null
+                        "foreignKeysSpecs": null,
+                        "foreignKeys": null
+                    }
+                },
+                {
+                    "com.linkedin.pegasus2avro.dataset.UpstreamLineage": {
+                        "upstreams": [
+                            {
+                                "auditStamp": {
+                                    "time": 0,
+                                    "actor": "urn:li:corpuser:unknown",
+                                    "impersonator": null
+                                },
+                                "dataset": "urn:li:dataset:(urn:li:dataPlatform:postgres,pagila.dbt_postgres.an-aliased-view-for-payments,PROD)",
+                                "type": "TRANSFORMED"
+                            }
+                        ]
                     }
                 }
             ]
@@ -599,6 +709,8 @@
     "systemMetadata": {
         "lastObserved": 1615443388097,
         "runId": "dbt-test-with-schemas",
+        "registryName": null,
+        "registryVersion": null,
         "properties": null
     }
 },
@@ -612,8 +724,8 @@
                     "com.linkedin.pegasus2avro.dataset.DatasetProperties": {
                         "customProperties": {
                             "model_maturity": "in dev",
-                            "owner": "@alice",
                             "some_other_property": "test 1",
+                            "owner": "@alice1",
                             "node_type": "source",
                             "dbt_file_path": "models/base.yml",
                             "catalog_type": "BASE TABLE",
@@ -629,8 +741,19 @@
                     }
                 },
                 {
-                    "com.linkedin.pegasus2avro.dataset.UpstreamLineage": {
-                        "upstreams": []
+                    "com.linkedin.pegasus2avro.common.Ownership": {
+                        "owners": [
+                            {
+                                "owner": "urn:li:corpuser:@alice1",
+                                "type": "DATAOWNER",
+                                "source": null
+                            }
+                        ],
+                        "lastModified": {
+                            "time": 0,
+                            "actor": "urn:li:corpuser:unknown",
+                            "impersonator": null
+                        }
                     }
                 },
                 {
@@ -672,7 +795,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "first_name",
@@ -686,9 +810,16 @@
                                 },
                                 "nativeDataType": "text",
                                 "recursive": false,
-                                "globalTags": null,
+                                "globalTags": {
+                                    "tags": [
+                                        {
+                                            "tag": "urn:li:tag:dbt:column_tag"
+                                        }
+                                    ]
+                                },
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "last_name",
@@ -704,7 +835,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "last_update",
@@ -720,11 +852,13 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             }
                         ],
                         "primaryKeys": null,
-                        "foreignKeysSpecs": null
+                        "foreignKeysSpecs": null,
+                        "foreignKeys": null
                     }
                 }
             ]
@@ -734,6 +868,8 @@
     "systemMetadata": {
         "lastObserved": 1615443388097,
         "runId": "dbt-test-with-schemas",
+        "registryName": null,
+        "registryVersion": null,
         "properties": null
     }
 },
@@ -758,11 +894,6 @@
                         "description": "a user's address",
                         "uri": null,
                         "tags": []
-                    }
-                },
-                {
-                    "com.linkedin.pegasus2avro.dataset.UpstreamLineage": {
-                        "upstreams": []
                     }
                 },
                 {
@@ -804,7 +935,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "address2",
@@ -820,7 +952,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "address_id",
@@ -836,7 +969,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "city_id",
@@ -852,7 +986,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "district",
@@ -868,7 +1003,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "last_update",
@@ -884,7 +1020,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "phone",
@@ -900,7 +1037,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "postal_code",
@@ -916,11 +1054,13 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             }
                         ],
                         "primaryKeys": null,
-                        "foreignKeysSpecs": null
+                        "foreignKeysSpecs": null,
+                        "foreignKeys": null
                     }
                 }
             ]
@@ -930,6 +1070,8 @@
     "systemMetadata": {
         "lastObserved": 1615443388097,
         "runId": "dbt-test-with-schemas",
+        "registryName": null,
+        "registryVersion": null,
         "properties": null
     }
 },
@@ -954,11 +1096,6 @@
                         "description": "a user's category",
                         "uri": null,
                         "tags": []
-                    }
-                },
-                {
-                    "com.linkedin.pegasus2avro.dataset.UpstreamLineage": {
-                        "upstreams": []
                     }
                 },
                 {
@@ -1000,7 +1137,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "last_update",
@@ -1016,7 +1154,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "name",
@@ -1032,11 +1171,13 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             }
                         ],
                         "primaryKeys": null,
-                        "foreignKeysSpecs": null
+                        "foreignKeysSpecs": null,
+                        "foreignKeys": null
                     }
                 }
             ]
@@ -1046,6 +1187,8 @@
     "systemMetadata": {
         "lastObserved": 1615443388097,
         "runId": "dbt-test-with-schemas",
+        "registryName": null,
+        "registryVersion": null,
         "properties": null
     }
 },
@@ -1070,11 +1213,6 @@
                         "description": null,
                         "uri": null,
                         "tags": []
-                    }
-                },
-                {
-                    "com.linkedin.pegasus2avro.dataset.UpstreamLineage": {
-                        "upstreams": []
                     }
                 },
                 {
@@ -1116,7 +1254,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "city_id",
@@ -1132,7 +1271,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "country_id",
@@ -1148,7 +1288,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "last_update",
@@ -1164,11 +1305,13 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             }
                         ],
                         "primaryKeys": null,
-                        "foreignKeysSpecs": null
+                        "foreignKeysSpecs": null,
+                        "foreignKeys": null
                     }
                 }
             ]
@@ -1178,6 +1321,8 @@
     "systemMetadata": {
         "lastObserved": 1615443388097,
         "runId": "dbt-test-with-schemas",
+        "registryName": null,
+        "registryVersion": null,
         "properties": null
     }
 },
@@ -1208,8 +1353,19 @@
                     }
                 },
                 {
-                    "com.linkedin.pegasus2avro.dataset.UpstreamLineage": {
-                        "upstreams": []
+                    "com.linkedin.pegasus2avro.common.Ownership": {
+                        "owners": [
+                            {
+                                "owner": "urn:li:corpuser:@bob",
+                                "type": "DATAOWNER",
+                                "source": null
+                            }
+                        ],
+                        "lastModified": {
+                            "time": 0,
+                            "actor": "urn:li:corpuser:unknown",
+                            "impersonator": null
+                        }
                     }
                 },
                 {
@@ -1251,7 +1407,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "country_id",
@@ -1267,7 +1424,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "last_update",
@@ -1283,11 +1441,13 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             }
                         ],
                         "primaryKeys": null,
-                        "foreignKeysSpecs": null
+                        "foreignKeysSpecs": null,
+                        "foreignKeys": null
                     }
                 }
             ]
@@ -1297,6 +1457,8 @@
     "systemMetadata": {
         "lastObserved": 1615443388097,
         "runId": "dbt-test-with-schemas",
+        "registryName": null,
+        "registryVersion": null,
         "properties": null
     }
 },
@@ -1321,11 +1483,6 @@
                         "description": "description for customer table from dbt",
                         "uri": null,
                         "tags": []
-                    }
-                },
-                {
-                    "com.linkedin.pegasus2avro.dataset.UpstreamLineage": {
-                        "upstreams": []
                     }
                 },
                 {
@@ -1367,7 +1524,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "activebool",
@@ -1383,7 +1541,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "address_id",
@@ -1399,7 +1558,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "create_date",
@@ -1415,7 +1575,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "customer_id",
@@ -1431,7 +1592,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "email",
@@ -1447,7 +1609,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "first_name",
@@ -1463,7 +1626,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "last_name",
@@ -1479,7 +1643,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "last_update",
@@ -1495,7 +1660,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "store_id",
@@ -1511,11 +1677,13 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             }
                         ],
                         "primaryKeys": null,
-                        "foreignKeysSpecs": null
+                        "foreignKeysSpecs": null,
+                        "foreignKeys": null
                     }
                 }
             ]
@@ -1525,6 +1693,8 @@
     "systemMetadata": {
         "lastObserved": 1615443388097,
         "runId": "dbt-test-with-schemas",
+        "registryName": null,
+        "registryVersion": null,
         "properties": null
     }
 },
@@ -1549,11 +1719,6 @@
                         "description": null,
                         "uri": null,
                         "tags": []
-                    }
-                },
-                {
-                    "com.linkedin.pegasus2avro.dataset.UpstreamLineage": {
-                        "upstreams": []
                     }
                 },
                 {
@@ -1595,7 +1760,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "customer_id",
@@ -1611,7 +1777,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "payment_date",
@@ -1627,7 +1794,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "payment_id",
@@ -1643,7 +1811,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "rental_id",
@@ -1659,7 +1828,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "staff_id",
@@ -1675,11 +1845,13 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             }
                         ],
                         "primaryKeys": null,
-                        "foreignKeysSpecs": null
+                        "foreignKeysSpecs": null,
+                        "foreignKeys": null
                     }
                 }
             ]
@@ -1689,6 +1861,8 @@
     "systemMetadata": {
         "lastObserved": 1615443388097,
         "runId": "dbt-test-with-schemas",
+        "registryName": null,
+        "registryVersion": null,
         "properties": null
     }
 },
@@ -1720,8 +1894,19 @@
                     }
                 },
                 {
-                    "com.linkedin.pegasus2avro.dataset.UpstreamLineage": {
-                        "upstreams": []
+                    "com.linkedin.pegasus2avro.common.Ownership": {
+                        "owners": [
+                            {
+                                "owner": "urn:li:corpuser:@charles",
+                                "type": "DATAOWNER",
+                                "source": null
+                            }
+                        ],
+                        "lastModified": {
+                            "time": 0,
+                            "actor": "urn:li:corpuser:unknown",
+                            "impersonator": null
+                        }
                     }
                 },
                 {
@@ -1763,7 +1948,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "customer_id",
@@ -1779,7 +1965,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "payment_date",
@@ -1795,7 +1982,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "payment_id",
@@ -1811,7 +1999,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "rental_id",
@@ -1827,7 +2016,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "staff_id",
@@ -1843,11 +2033,13 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             }
                         ],
                         "primaryKeys": null,
-                        "foreignKeysSpecs": null
+                        "foreignKeysSpecs": null,
+                        "foreignKeys": null
                     }
                 }
             ]
@@ -1857,6 +2049,8 @@
     "systemMetadata": {
         "lastObserved": 1615443388097,
         "runId": "dbt-test-with-schemas",
+        "registryName": null,
+        "registryVersion": null,
         "properties": null
     }
 },
@@ -1881,11 +2075,6 @@
                         "description": null,
                         "uri": null,
                         "tags": []
-                    }
-                },
-                {
-                    "com.linkedin.pegasus2avro.dataset.UpstreamLineage": {
-                        "upstreams": []
                     }
                 },
                 {
@@ -1927,7 +2116,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "customer_id",
@@ -1943,7 +2133,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "payment_date",
@@ -1959,7 +2150,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "payment_id",
@@ -1975,7 +2167,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "rental_id",
@@ -1991,7 +2184,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "staff_id",
@@ -2007,11 +2201,13 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             }
                         ],
                         "primaryKeys": null,
-                        "foreignKeysSpecs": null
+                        "foreignKeysSpecs": null,
+                        "foreignKeys": null
                     }
                 }
             ]
@@ -2021,6 +2217,8 @@
     "systemMetadata": {
         "lastObserved": 1615443388097,
         "runId": "dbt-test-with-schemas",
+        "registryName": null,
+        "registryVersion": null,
         "properties": null
     }
 },
@@ -2045,11 +2243,6 @@
                         "description": null,
                         "uri": null,
                         "tags": []
-                    }
-                },
-                {
-                    "com.linkedin.pegasus2avro.dataset.UpstreamLineage": {
-                        "upstreams": []
                     }
                 },
                 {
@@ -2091,7 +2284,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "customer_id",
@@ -2107,7 +2301,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "payment_date",
@@ -2123,7 +2318,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "payment_id",
@@ -2139,7 +2335,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "rental_id",
@@ -2155,7 +2352,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "staff_id",
@@ -2171,11 +2369,13 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             }
                         ],
                         "primaryKeys": null,
-                        "foreignKeysSpecs": null
+                        "foreignKeysSpecs": null,
+                        "foreignKeys": null
                     }
                 }
             ]
@@ -2185,6 +2385,8 @@
     "systemMetadata": {
         "lastObserved": 1615443388097,
         "runId": "dbt-test-with-schemas",
+        "registryName": null,
+        "registryVersion": null,
         "properties": null
     }
 },
@@ -2209,11 +2411,6 @@
                         "description": "a payment",
                         "uri": null,
                         "tags": []
-                    }
-                },
-                {
-                    "com.linkedin.pegasus2avro.dataset.UpstreamLineage": {
-                        "upstreams": []
                     }
                 },
                 {
@@ -2255,7 +2452,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "customer_id",
@@ -2271,7 +2469,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "payment_date",
@@ -2287,7 +2486,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "payment_id",
@@ -2303,7 +2503,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "rental_id",
@@ -2319,7 +2520,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "staff_id",
@@ -2335,11 +2537,13 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             }
                         ],
                         "primaryKeys": null,
-                        "foreignKeysSpecs": null
+                        "foreignKeysSpecs": null,
+                        "foreignKeys": null
                     }
                 }
             ]
@@ -2349,6 +2553,8 @@
     "systemMetadata": {
         "lastObserved": 1615443388097,
         "runId": "dbt-test-with-schemas",
+        "registryName": null,
+        "registryVersion": null,
         "properties": null
     }
 },
@@ -2373,11 +2579,6 @@
                         "description": null,
                         "uri": null,
                         "tags": []
-                    }
-                },
-                {
-                    "com.linkedin.pegasus2avro.dataset.UpstreamLineage": {
-                        "upstreams": []
                     }
                 },
                 {
@@ -2419,7 +2620,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "customer_id",
@@ -2435,7 +2637,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "payment_date",
@@ -2451,7 +2654,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "payment_id",
@@ -2467,7 +2671,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "rental_id",
@@ -2483,7 +2688,8 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             },
                             {
                                 "fieldPath": "staff_id",
@@ -2499,11 +2705,13 @@
                                 "recursive": false,
                                 "globalTags": null,
                                 "glossaryTerms": null,
-                                "isPartOfKey": false
+                                "isPartOfKey": false,
+                                "jsonProps": null
                             }
                         ],
                         "primaryKeys": null,
-                        "foreignKeysSpecs": null
+                        "foreignKeysSpecs": null,
+                        "foreignKeys": null
                     }
                 }
             ]
@@ -2513,6 +2721,8 @@
     "systemMetadata": {
         "lastObserved": 1615443388097,
         "runId": "dbt-test-with-schemas",
+        "registryName": null,
+        "registryVersion": null,
         "properties": null
     }
 }

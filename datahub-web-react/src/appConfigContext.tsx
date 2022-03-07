@@ -10,6 +10,12 @@ export const DEFAULT_APP_CONFIG = {
         platformPrivileges: [],
         resourcePrivileges: [],
     },
+    identityManagementConfig: {
+        enabled: false,
+    },
+    managedIngestionConfig: {
+        enabled: false,
+    },
 };
 
 export const AppConfigContext = React.createContext<{

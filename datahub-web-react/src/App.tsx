@@ -28,6 +28,8 @@ import { MLPrimaryKeyEntity } from './app/entity/mlPrimaryKey/MLPrimaryKeyEntity
 import { MLFeatureTableEntity } from './app/entity/mlFeatureTable/MLFeatureTableEntity';
 import { MLModelEntity } from './app/entity/mlModel/MLModelEntity';
 import { MLModelGroupEntity } from './app/entity/mlModelGroup/MLModelGroupEntity';
+import { DomainEntity } from './app/entity/domain/DomainEntity';
+import { ContainerEntity } from './app/entity/container/ContainerEntity';
 
 /*
     Construct Apollo Client
@@ -61,7 +63,6 @@ const client = new ApolloClient({
     defaultOptions: {
         watchQuery: {
             fetchPolicy: 'no-cache',
-            nextFetchPolicy: 'cache-first',
         },
         query: {
             fetchPolicy: 'no-cache',
@@ -94,6 +95,8 @@ const App: React.VFC = () => {
         register.register(new MLFeatureTableEntity());
         register.register(new MLModelEntity());
         register.register(new MLModelGroupEntity());
+        register.register(new DomainEntity());
+        register.register(new ContainerEntity());
         return register;
     }, []);
 

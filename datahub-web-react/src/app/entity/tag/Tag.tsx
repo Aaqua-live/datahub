@@ -1,9 +1,16 @@
 import { TagOutlined, TagFilled } from '@ant-design/icons';
 import * as React from 'react';
+import styled from 'styled-components';
 import { Tag, EntityType, SearchResult } from '../../../types.generated';
 import DefaultPreviewCard from '../../preview/DefaultPreviewCard';
 import { Entity, IconStyleType, PreviewType } from '../Entity';
+import { getDataForEntityType } from '../shared/containers/profile/utils';
+import { urlEncodeUrn } from '../shared/utils';
 import TagProfile from './TagProfile';
+
+const PreviewTagIcon = styled(TagOutlined)`
+    font-size: 20px;
+`;
 
 /**
  * Definition of the DataHub Tag entity.
@@ -42,13 +49,17 @@ export class TagEntity implements Entity<Tag> {
 
     getCollectionName: () => string = () => 'Tags';
 
+    getEntityName: () => string = () => 'Tag';
+
     renderProfile: (urn: string) => JSX.Element = (_) => <TagProfile />;
 
     renderPreview = (_: PreviewType, data: Tag) => (
         <DefaultPreviewCard
             description={data.description || ''}
             name={data.name}
-            url={`/${this.getPathName()}/${data.urn}`}
+            url={`/${this.getPathName()}/${urlEncodeUrn(data.urn)}`}
+            logoComponent={<PreviewTagIcon />}
+            type="Tag"
         />
     );
 
@@ -58,5 +69,9 @@ export class TagEntity implements Entity<Tag> {
 
     displayName = (data: Tag) => {
         return data.name;
+    };
+
+    getGenericEntityProperties = (tag: Tag) => {
+        return getDataForEntityType({ data: tag, entityType: this.type, getOverrideProperties: (data) => data });
     };
 }

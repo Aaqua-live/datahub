@@ -1,8 +1,11 @@
 import React from 'react';
 import { render } from '@testing-library/react';
+import { MockedProvider } from '@apollo/client/testing';
+
 import { EntityType, PlatformNativeType, SearchResult } from '../../../../types.generated';
 import TestPageContainer from '../../../../utils/test-utils/TestPageContainer';
 import RelatedEntityResults from '../RelatedEntityResults';
+import { mocks } from '../../../../Mocks';
 
 const searchResult: {
     [key in EntityType]?: Array<SearchResult>;
@@ -14,8 +17,10 @@ const searchResult: {
                 type: EntityType.Dataset,
                 name: 'HiveDataset',
                 origin: 'PROD',
-                description: 'this is a dataset',
                 platformNativeType: PlatformNativeType.Table,
+                properties: {
+                    description: 'this is a dataset',
+                },
                 platform: {
                     name: 'hive',
                 },
@@ -29,8 +34,10 @@ const searchResult: {
                 type: EntityType.Dataset,
                 name: 'KafkaDataset',
                 origin: 'PROD',
-                description: 'this is also a dataset',
                 platformNativeType: PlatformNativeType.Table,
+                properties: {
+                    description: 'this is also a dataset',
+                },
                 platform: {
                     name: 'kafka',
                 },
@@ -44,9 +51,11 @@ const searchResult: {
 describe('RelatedEntityResults', () => {
     it('renders a menu datasets option', () => {
         const { getByText } = render(
-            <TestPageContainer>
-                <RelatedEntityResults searchResult={searchResult} />;
-            </TestPageContainer>,
+            <MockedProvider mocks={mocks} addTypename={false}>
+                <TestPageContainer>
+                    <RelatedEntityResults searchResult={searchResult} />;
+                </TestPageContainer>
+            </MockedProvider>,
         );
         expect(getByText('this is a dataset')).toBeInTheDocument();
     });

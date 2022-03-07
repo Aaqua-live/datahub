@@ -2,12 +2,11 @@ package com.linkedin.metadata.systemmetadata;
 
 import com.linkedin.metadata.run.AspectRowSummary;
 import com.linkedin.metadata.run.IngestionRunSummary;
+import com.linkedin.metadata.search.elasticsearch.ElasticSearchServiceTest;
 import com.linkedin.metadata.utils.elasticsearch.IndexConvention;
 import com.linkedin.metadata.utils.elasticsearch.IndexConventionImpl;
 import com.linkedin.mxe.SystemMetadata;
-import java.net.URISyntaxException;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 import org.apache.http.HttpHost;
 import org.apache.http.impl.nio.reactor.IOReactorConfig;
@@ -20,31 +19,37 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.*;
+import static com.linkedin.metadata.DockerTestUtils.checkContainerEngine;
+import static com.linkedin.metadata.ElasticSearchTestUtils.syncAfterWrite;
+import static com.linkedin.metadata.systemmetadata.ElasticSearchSystemMetadataService.INDEX_NAME;
+import static org.testng.Assert.assertEquals;
+
 
 public class ElasticSearchSystemMetadataServiceTest {
 
   private ElasticsearchContainer _elasticsearchContainer;
   private RestHighLevelClient _searchClient;
-  private IndexConvention _indexConvention;
+  private final IndexConvention _indexConvention = new IndexConventionImpl(null);
+  private final String _indexName = _indexConvention.getIndexName(INDEX_NAME);
   private ElasticSearchSystemMetadataService _client;
 
   private static final String IMAGE_NAME = "docker.elastic.co/elasticsearch/elasticsearch:7.9.3";
   private static final int HTTP_PORT = 9200;
 
-  @BeforeMethod
-  public void wipe() throws URISyntaxException {
-    _client.clear();
-  }
-
   @BeforeTest
   public void setup() {
-    _indexConvention = new IndexConventionImpl(null);
     _elasticsearchContainer = new ElasticsearchContainer(IMAGE_NAME);
+    checkContainerEngine(_elasticsearchContainer.getDockerClient());
     _elasticsearchContainer.start();
     _searchClient = buildRestClient();
     _client = buildService();
     _client.configure();
+  }
+
+  @BeforeMethod
+  public void wipe() throws Exception {
+    _client.clear();
+    syncAfterWrite(_searchClient, _indexName);
   }
 
   @Nonnull
@@ -62,8 +67,10 @@ public class ElasticSearchSystemMetadataServiceTest {
 
   @Nonnull
   private ElasticSearchSystemMetadataService buildService() {
-    ESSystemMetadataDAO dao = new ESSystemMetadataDAO(_searchClient, _indexConvention, 1, 1, 1, 1);
-    return new ElasticSearchSystemMetadataService(_searchClient, _indexConvention, dao);
+    ESSystemMetadataDAO dao = new ESSystemMetadataDAO(_searchClient, _indexConvention,
+        ElasticSearchServiceTest.getBulkProcessor(_searchClient));
+    return new ElasticSearchSystemMetadataService(_searchClient, _indexConvention, dao,
+        ElasticSearchServiceTest.getIndexBuilder(_searchClient));
   }
 
   @AfterTest
@@ -88,7 +95,7 @@ public class ElasticSearchSystemMetadataServiceTest {
     _client.insert(metadata2, "urn:li:chart:2", "chartKey");
     _client.insert(metadata2, "urn:li:chart:2", "Ownership");
 
-    TimeUnit.SECONDS.sleep(5);
+    syncAfterWrite(_searchClient, _indexName);
 
     List<IngestionRunSummary> runs = _client.listRuns(0, 20);
 
@@ -117,7 +124,7 @@ public class ElasticSearchSystemMetadataServiceTest {
     _client.insert(metadata2, "urn:li:chart:2", "chartKey");
     _client.insert(metadata2, "urn:li:chart:2", "Ownership");
 
-    TimeUnit.SECONDS.sleep(5);
+    syncAfterWrite(_searchClient, _indexName);
 
     List<IngestionRunSummary> runs = _client.listRuns(0, 20);
 
@@ -146,7 +153,7 @@ public class ElasticSearchSystemMetadataServiceTest {
     _client.insert(metadata2, "urn:li:chart:2", "chartKey");
     _client.insert(metadata2, "urn:li:chart:2", "Ownership");
 
-    TimeUnit.SECONDS.sleep(5);
+    syncAfterWrite(_searchClient, _indexName);
 
     List<AspectRowSummary> rows = _client.findByRunId("abc-456");
 
@@ -174,11 +181,11 @@ public class ElasticSearchSystemMetadataServiceTest {
     _client.insert(metadata2, "urn:li:chart:2", "chartKey");
     _client.insert(metadata2, "urn:li:chart:2", "Ownership");
 
-    TimeUnit.SECONDS.sleep(5);
+    syncAfterWrite(_searchClient, _indexName);
 
     _client.deleteUrn("urn:li:chart:1");
 
-    TimeUnit.SECONDS.sleep(5);
+    syncAfterWrite(_searchClient, _indexName);
 
     List<AspectRowSummary> rows = _client.findByRunId("abc-456");
 
@@ -190,7 +197,7 @@ public class ElasticSearchSystemMetadataServiceTest {
   public void testInsertNullData() throws Exception {
     _client.insert(null, "urn:li:chart:1", "chartKey");
 
-    TimeUnit.SECONDS.sleep(5);
+    syncAfterWrite(_searchClient, _indexName);
 
     List<IngestionRunSummary> runs = _client.listRuns(0, 20);
 

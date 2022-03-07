@@ -10,6 +10,7 @@ to be a secure environment and as such authentication is validated & enforced on
 
 1. [Configuring OIDC using Google](configure-oidc-react-google.md)
 2. [Configuring OIDC using Okta](configure-oidc-react-okta.md)
+3. [Configuring OIDC using Azure](configure-oidc-react-azure.md)
 
 ## Configuring OIDC in React 
 
@@ -79,7 +80,7 @@ datahub-frontend:
   ...
   extraEnvs:
     - name: AUTH_OIDC_ENABLED
-      value: true
+      value: "true"
     - name: AUTH_OIDC_CLIENT_ID
       value: your-client-id
     - name: AUTH_OIDC_CLIENT_SECRET
@@ -184,3 +185,6 @@ A brief summary of the steps that occur when the user navigates to the React app
 7. DataHub sets session cookies for the newly authenticated user 
 8. DataHub redirects the user to the homepage ("/")
 
+### Root user
+
+Even if OIDC is configured the root user can still login without OIDC by going to `/login` URL endpoint. It is recommended that you don't use the default credentials by mounting a different file in the front end container. To do this please see (jaas)[../jaas.md] - "Mount a custom user.props file".

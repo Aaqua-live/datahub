@@ -1,6 +1,6 @@
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Iterable, List, Optional, Union
+from typing import Any, Dict, Iterable, List, Optional, Union
 
 from pydantic import validator
 
@@ -34,6 +34,7 @@ class GlossaryTermConfig(ConfigModel):
     owners: Optional[Owners]
     inherits: Optional[List[str]]
     contains: Optional[List[str]]
+    custom_properties: Optional[Dict[str, str]]
 
 
 class GlossaryNodeConfig(ConfigModel):
@@ -51,8 +52,8 @@ class DefaultConfig(ConfigModel):
     """Holds defaults for populating fields in glossary terms"""
 
     source: str
-    url: str
     owners: Owners
+    url: Optional[str] = None
     source_type: Optional[str] = "INTERNAL"
 
 
@@ -62,7 +63,8 @@ class BusinessGlossarySourceConfig(ConfigModel):
 
 class BusinessGlossaryConfig(DefaultConfig):
     version: str
-    nodes: List[GlossaryNodeConfig]
+    nodes: Optional[List[GlossaryNodeConfig]]
+    terms: Optional[List[GlossaryTermConfig]]
 
     @validator("version")
     def version_must_be_1(cls, v):
@@ -106,22 +108,31 @@ def get_mces(
     path: List[str] = []
     root_owners = get_owners(glossary.owners)
 
-    for node in glossary.nodes:
-        events += get_mces_from_node(
-            node,
-            path + [node.name],
-            parentNode=None,
-            parentOwners=root_owners,
-            defaults=glossary,
-        )
+    if glossary.nodes:
+        for node in glossary.nodes:
+            events += get_mces_from_node(
+                node,
+                path + [node.name],
+                parentNode=None,
+                parentOwners=root_owners,
+                defaults=glossary,
+            )
+
+    if glossary.terms:
+        for term in glossary.terms:
+            events += get_mces_from_term(
+                term,
+                path + [term.name],
+                parentNode=None,
+                parentOwnership=root_owners,
+                defaults=glossary,
+            )
+
     return events
 
 
 def get_mce_from_snapshot(snapshot: Any) -> models.MetadataChangeEventClass:
-    return models.MetadataChangeEventClass(
-        proposedSnapshot=snapshot,
-        systemMetadata=models.SystemMetadataClass(runId="test-glossary"),
-    )
+    return models.MetadataChangeEventClass(proposedSnapshot=snapshot)
 
 
 def get_mces_from_node(
@@ -171,7 +182,7 @@ def get_mces_from_node(
 def get_mces_from_term(
     glossaryTerm: GlossaryTermConfig,
     path: List[str],
-    parentNode: str,
+    parentNode: Optional[str],
     parentOwnership: models.OwnershipClass,
     defaults: DefaultConfig,
 ) -> List[models.MetadataChangeEventClass]:
@@ -196,6 +207,7 @@ def get_mces_from_term(
         else defaults.source,
         sourceUrl=glossaryTerm.source_url if glossaryTerm.source_url else defaults.url,
         parentNode=parentNode,
+        customProperties=glossaryTerm.custom_properties,
     )
     aspects.append(term_info)
 

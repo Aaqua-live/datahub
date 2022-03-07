@@ -23,4 +23,6 @@ typeref Snapshot = union[
   GlossaryTermSnapshot,
   GlossaryNodeSnapshot,
   DataHubPolicySnapshot,
+  SchemaFieldSnapshot,
+  DataHubRetentionSnapshot,
 ]

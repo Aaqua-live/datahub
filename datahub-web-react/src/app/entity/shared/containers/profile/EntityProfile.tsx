@@ -3,7 +3,6 @@ import { Alert, Divider } from 'antd';
 import { MutationHookOptions, MutationTuple, QueryHookOptions, QueryResult } from '@apollo/client/react/types/types';
 import styled from 'styled-components';
 import { useHistory } from 'react-router';
-
 import { EntityType, Exact } from '../../../../../types.generated';
 import { Message } from '../../../../shared/Message';
 import { getDataForEntityType, getEntityPath, useRoutedTab } from './utils';
@@ -18,6 +17,8 @@ import useIsLineageMode from '../../../../lineage/utils/useIsLineageMode';
 import { useEntityRegistry } from '../../../../useEntityRegistry';
 import LineageExplorer from '../../../../lineage/LineageExplorer';
 import CompactContext from '../../../../shared/CompactContext';
+import DynamicTab from '../../tabs/Entity/weaklyTypedAspects/DynamicTab';
+import analytics, { EventType } from '../../../../analytics';
 
 type Props<T, U> = {
     urn: string;
@@ -35,9 +36,9 @@ type Props<T, U> = {
             urn: string;
         }>
     >;
-    useUpdateQuery: (
-        baseOptions?: MutationHookOptions<U, { input: GenericEntityUpdate }> | undefined,
-    ) => MutationTuple<U, { input: GenericEntityUpdate }>;
+    useUpdateQuery?: (
+        baseOptions?: MutationHookOptions<U, { urn: string; input: GenericEntityUpdate }> | undefined,
+    ) => MutationTuple<U, { urn: string; input: GenericEntityUpdate }>;
     getOverrideProperties: (T) => GenericEntityProperties;
     tabs: EntityTab[];
     sidebarSections: EntitySidebarSection[];
@@ -47,7 +48,6 @@ const ContentContainer = styled.div`
     display: flex;
     height: auto;
     min-height: 100%;
-    max-height: calc(100vh - 108px);
     align-items: stretch;
     flex: 1;
 `;
@@ -77,7 +77,6 @@ const Header = styled.div`
     border-bottom: 1px solid ${ANTD_GRAY[4.5]};
     padding: 20px 20px 0 20px;
     flex-shrink: 0;
-    height: 137px;
 `;
 
 const TabContent = styled.div`
@@ -85,8 +84,14 @@ const TabContent = styled.div`
     overflow: auto;
 `;
 
-// TODO(Gabe): Refactor this to generate dynamically
-const QUERY_NAME = 'getDataset';
+const defaultTabDisplayConfig = {
+    visible: (_, _1) => true,
+    enabled: (_, _1) => true,
+};
+
+const defaultSidebarSection = {
+    visible: (_, _1) => true,
+};
 
 /**
  * Container for display of the Entity Page
@@ -100,11 +105,15 @@ export const EntityProfile = <T, U>({
     tabs,
     sidebarSections,
 }: Props<T, U>): JSX.Element => {
-    const routedTab = useRoutedTab(tabs);
     const isLineageMode = useIsLineageMode();
     const entityRegistry = useEntityRegistry();
     const history = useHistory();
     const isCompact = React.useContext(CompactContext);
+    const tabsWithDefaults = tabs.map((tab) => ({ ...tab, display: { ...defaultTabDisplayConfig, ...tab.display } }));
+    const sideBarSectionsWithDefaults = sidebarSections.map((sidebarSection) => ({
+        ...sidebarSection,
+        display: { ...defaultSidebarSection, ...sidebarSection.display },
+    }));
 
     const routeToTab = useCallback(
         ({
@@ -116,18 +125,51 @@ export const EntityProfile = <T, U>({
             tabParams?: Record<string, any>;
             method?: 'push' | 'replace';
         }) => {
+            analytics.event({
+                type: EventType.EntitySectionViewEvent,
+                entityType,
+                entityUrn: urn,
+                section: tabName.toLowerCase(),
+            });
             history[method](getEntityPath(entityType, urn, entityRegistry, false, tabName, tabParams));
         },
         [history, entityType, urn, entityRegistry],
     );
 
-    const { loading, error, data } = useEntityQuery({ variables: { urn } });
-
-    const [updateEntity] = useUpdateQuery({
-        refetchQueries: () => [QUERY_NAME],
+    const { loading, error, data, refetch } = useEntityQuery({
+        variables: { urn },
     });
 
-    const entityData = getDataForEntityType({ data, entityType, getOverrideProperties });
+    const maybeUpdateEntity = useUpdateQuery?.({
+        onCompleted: () => refetch(),
+    });
+    let updateEntity;
+    if (maybeUpdateEntity) {
+        [updateEntity] = maybeUpdateEntity;
+    }
+
+    const entityData =
+        (data && getDataForEntityType({ data: data[Object.keys(data)[0]], entityType, getOverrideProperties })) || null;
+
+    const lineage = entityData ? entityRegistry.getLineageVizConfig(entityType, entityData) : undefined;
+
+    const autoRenderTabs: EntityTab[] =
+        entityData?.autoRenderAspects?.map((aspect) => ({
+            name: aspect.renderSpec?.displayName || aspect.aspectName,
+            component: () => (
+                <DynamicTab
+                    renderSpec={aspect.renderSpec}
+                    type={aspect.renderSpec?.displayType}
+                    payload={aspect.payload}
+                />
+            ),
+            display: {
+                visible: () => true,
+                enabled: () => true,
+            },
+        })) || [];
+
+    const routedTab = useRoutedTab([...tabsWithDefaults, ...autoRenderTabs]);
 
     if (isCompact) {
         return (
@@ -139,6 +181,8 @@ export const EntityProfile = <T, U>({
                     baseEntity: data,
                     updateEntity,
                     routeToTab,
+                    refetch,
+                    lineage,
                 }}
             >
                 <div>
@@ -150,13 +194,17 @@ export const EntityProfile = <T, U>({
                         <>
                             <EntityHeader />
                             <Divider />
-                            <EntitySidebar sidebarSections={sidebarSections} />
+                            <EntitySidebar sidebarSections={sideBarSectionsWithDefaults} />
                         </>
                     )}
                 </div>
             </EntityContext.Provider>
         );
     }
+
+    const isBrowsable = entityRegistry.getBrowseEntityTypes().includes(entityType);
+    const isLineageEnabled = entityRegistry.getLineageEntityTypes().includes(entityType);
+    const showBrowseBar = isBrowsable || isLineageEnabled;
 
     return (
         <EntityContext.Provider
@@ -167,10 +215,12 @@ export const EntityProfile = <T, U>({
                 baseEntity: data,
                 updateEntity,
                 routeToTab,
+                refetch,
+                lineage,
             }}
         >
             <>
-                <EntityProfileNavBar urn={urn} entityData={entityData} entityType={entityType} />
+                {showBrowseBar && <EntityProfileNavBar urn={urn} entityType={entityType} />}
                 {loading && <Message type="loading" content="Loading..." style={{ marginTop: '10%' }} />}
                 {!loading && error && (
                     <Alert type="error" message={error?.message || `Entity failed to load for urn ${urn}`} />
@@ -184,13 +234,18 @@ export const EntityProfile = <T, U>({
                                 <HeaderAndTabsFlex>
                                     <Header>
                                         <EntityHeader />
-                                        <EntityTabs tabs={tabs} selectedTab={routedTab} />
+                                        <EntityTabs
+                                            tabs={[...tabsWithDefaults, ...autoRenderTabs]}
+                                            selectedTab={routedTab}
+                                        />
                                     </Header>
-                                    <TabContent>{routedTab && <routedTab.component />}</TabContent>
+                                    <TabContent>
+                                        {routedTab && <routedTab.component properties={routedTab.properties} />}
+                                    </TabContent>
                                 </HeaderAndTabsFlex>
                             </HeaderAndTabs>
                             <Sidebar>
-                                <EntitySidebar sidebarSections={sidebarSections} />
+                                <EntitySidebar sidebarSections={sideBarSectionsWithDefaults} />
                             </Sidebar>
                         </>
                     )}

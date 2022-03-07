@@ -44,10 +44,10 @@ export default function MLModelHeader({ mlModel: { ownership, platform, properti
                                 </Typography.Text>
                             </div>
                             <Space direction="horizontal">
-                                {platform.info?.logoUrl ? (
+                                {platform.properties?.logoUrl ? (
                                     <PreviewImage
                                         preview={false}
-                                        src={platform.info?.logoUrl}
+                                        src={platform.properties?.logoUrl}
                                         placeholder
                                         alt={platform.name}
                                     />
@@ -58,7 +58,7 @@ export default function MLModelHeader({ mlModel: { ownership, platform, properti
                     ) : null}
                 </Row>
                 <MarkdownViewer isCompact={isCompact} source={properties?.description || ''} />
-                <AvatarsGroup owners={ownership?.owners} entityRegistry={entityRegistry} size="large" />
+                <AvatarsGroup owners={ownership?.owners} entityRegistry={entityRegistry} />
             </Space>
         </>
     );

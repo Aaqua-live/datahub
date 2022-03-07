@@ -1,10 +1,15 @@
 package com.linkedin.datahub.graphql.types.corpuser;
 
+import com.linkedin.common.url.Url;
 import com.linkedin.common.urn.CorpuserUrn;
 
 import com.linkedin.common.urn.Urn;
+import com.linkedin.data.template.RecordTemplate;
+import com.linkedin.data.template.StringArray;
 import com.linkedin.datahub.graphql.QueryContext;
+import com.linkedin.datahub.graphql.generated.CorpUserUpdateInput;
 import com.linkedin.datahub.graphql.generated.EntityType;
+import com.linkedin.datahub.graphql.types.MutableType;
 import com.linkedin.datahub.graphql.types.SearchableEntityType;
 import com.linkedin.datahub.graphql.generated.AutoCompleteResults;
 import com.linkedin.datahub.graphql.generated.CorpUser;
@@ -13,12 +18,18 @@ import com.linkedin.datahub.graphql.generated.SearchResults;
 import com.linkedin.datahub.graphql.types.corpuser.mappers.CorpUserSnapshotMapper;
 import com.linkedin.datahub.graphql.types.mappers.AutoCompleteResultsMapper;
 import com.linkedin.datahub.graphql.types.mappers.UrnSearchResultsMapper;
-import com.linkedin.entity.client.EntityClient;
 import com.linkedin.entity.Entity;
+import com.linkedin.entity.client.EntityClient;
+import com.linkedin.events.metadata.ChangeType;
+import com.linkedin.identity.CorpUserEditableInfo;
+import com.linkedin.metadata.Constants;
 import com.linkedin.metadata.query.AutoCompleteResult;
-import com.linkedin.metadata.query.SearchResult;
+import com.linkedin.metadata.search.SearchResult;
 
+import com.linkedin.metadata.utils.GenericAspectUtils;
+import com.linkedin.mxe.MetadataChangeProposal;
 import graphql.execution.DataFetcherResult;
+import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.net.URISyntaxException;
@@ -29,12 +40,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class CorpUserType implements SearchableEntityType<CorpUser> {
+public class CorpUserType implements SearchableEntityType<CorpUser>, MutableType<CorpUserUpdateInput> {
 
-    private final EntityClient _corpUsersClient;
+    private final EntityClient _entityClient;
 
-    public CorpUserType(final EntityClient corpUsersClient) {
-        _corpUsersClient = corpUsersClient;
+    public CorpUserType(final EntityClient entityClient) {
+        _entityClient = entityClient;
     }
 
     @Override
@@ -55,8 +66,8 @@ public class CorpUserType implements SearchableEntityType<CorpUser> {
                     .map(this::getCorpUserUrn)
                     .collect(Collectors.toList());
 
-            final Map<Urn, Entity> corpUserMap = _corpUsersClient
-                    .batchGet(new HashSet<>(corpUserUrns), context.getActor());
+            final Map<Urn, Entity> corpUserMap = _entityClient
+                    .batchGet(new HashSet<>(corpUserUrns), context.getAuthentication());
 
             final List<Entity> results = new ArrayList<>();
             for (CorpuserUrn urn : corpUserUrns) {
@@ -77,8 +88,8 @@ public class CorpUserType implements SearchableEntityType<CorpUser> {
                                 int start,
                                 int count,
                                 @Nonnull final QueryContext context) throws Exception {
-        final SearchResult searchResult = _corpUsersClient.search("corpuser", query, Collections.emptyMap(), start, count,
-            context.getActor());
+        final SearchResult searchResult = _entityClient.search("corpuser", query, Collections.emptyMap(), start, count,
+            context.getAuthentication());
         return UrnSearchResultsMapper.map(searchResult);
     }
 
@@ -88,7 +99,7 @@ public class CorpUserType implements SearchableEntityType<CorpUser> {
                                             @Nullable List<FacetFilterInput> filters,
                                             int limit,
                                             @Nonnull final QueryContext context) throws Exception {
-        final AutoCompleteResult result = _corpUsersClient.autoComplete("corpuser", query, Collections.emptyMap(), limit, context.getActor());
+        final AutoCompleteResult result = _entityClient.autoComplete("corpuser", query, Collections.emptyMap(), limit, context.getAuthentication());
         return AutoCompleteResultsMapper.map(result);
     }
 
@@ -98,5 +109,66 @@ public class CorpUserType implements SearchableEntityType<CorpUser> {
         } catch (URISyntaxException e) {
             throw new RuntimeException(String.format("Failed to retrieve user with urn %s, invalid urn", urnStr));
         }
+    }
+
+    public Class<CorpUserUpdateInput> inputClass() {
+        return CorpUserUpdateInput.class;
+    }
+
+    @Override
+    public CorpUser update(@Nonnull String urn, @Nonnull CorpUserUpdateInput input, @Nonnull QueryContext context) throws Exception {
+        final CorpuserUrn actor = CorpuserUrn.createFromString(context.getAuthentication().getActor().toUrnStr());
+
+        // Get existing editable info to merge with
+        Optional<CorpUserEditableInfo> existingCorpUserEditableInfo =
+            _entityClient.getVersionedAspect(urn, Constants.CORP_USER_EDITABLE_INFO_NAME, 0L, CorpUserEditableInfo.class,
+                context.getAuthentication());
+
+        // Create the MCP
+        final MetadataChangeProposal proposal = new MetadataChangeProposal();
+        proposal.setEntityUrn(Urn.createFromString(urn));
+        proposal.setEntityType(Constants.CORP_USER_ENTITY_NAME);
+        proposal.setAspectName(Constants.CORP_USER_EDITABLE_INFO_NAME);
+        proposal.setAspect(GenericAspectUtils.serializeAspect(mapCorpUserEditableInfo(input, existingCorpUserEditableInfo)));
+        proposal.setChangeType(ChangeType.UPSERT);
+        _entityClient.ingestProposal(proposal, context.getAuthentication());
+
+        return load(urn, context).getData();
+    }
+
+    private RecordTemplate mapCorpUserEditableInfo(CorpUserUpdateInput input, Optional<CorpUserEditableInfo> existing) {
+        CorpUserEditableInfo result = existing.orElseGet(() -> new CorpUserEditableInfo());
+        if (input.getDisplayName() != null) {
+            result.setDisplayName(input.getDisplayName());
+        }
+        if (input.getAboutMe() != null) {
+            result.setAboutMe(input.getAboutMe());
+        }
+        if (input.getPictureLink() != null) {
+            result.setPictureLink(new Url(input.getPictureLink()));
+        }
+        if (input.getAboutMe() != null) {
+            result.setAboutMe(input.getAboutMe());
+        }
+        if (input.getSkills() != null) {
+            result.setSkills(new StringArray(input.getSkills()));
+        }
+        if (input.getTeams() != null) {
+            result.setTeams(new StringArray(input.getTeams()));
+        }
+        if (input.getPhone() != null) {
+            result.setPhone(input.getPhone());
+        }
+        if (input.getSlack() != null) {
+            result.setSlack(input.getSlack());
+        }
+        if (input.getEmail() != null) {
+            result.setEmail(input.getEmail());
+        }
+        if (input.getTitle() != null) {
+            result.setTitle(input.getTitle());
+        }
+
+        return result;
     }
 }

@@ -3,7 +3,7 @@ import { Link, useHistory, useLocation } from 'react-router-dom';
 import { Badge, Breadcrumb, Row } from 'antd';
 import styled from 'styled-components';
 import { InfoCircleOutlined, PartitionOutlined } from '@ant-design/icons';
-import { blue, grey } from '@ant-design/colors';
+import { grey, blue } from '@ant-design/colors';
 import { EntityType } from '../../../../../../types.generated';
 import { useEntityRegistry } from '../../../../../useEntityRegistry';
 import { PageRoutes } from '../../../../../../conf/Global';
@@ -16,6 +16,7 @@ type Props = {
     path: Array<string>;
     upstreams: number;
     downstreams: number;
+    breadcrumbLinksEnabled: boolean;
 };
 
 const LineageIconGroup = styled.div`
@@ -43,10 +44,10 @@ const IconGroup = styled.div<{ isSelected: boolean; disabled: boolean }>`
         if (props.disabled) {
             return grey[2];
         }
-        return props.isSelected ? 'black' : grey[2];
+        return !props.isSelected ? 'black' : props.theme.styles['primary-color'] || blue[4];
     }};
     &:hover {
-        color: ${(props) => !props.disabled && (props.isSelected ? 'black' : blue[4])};
+        color: ${(props) => (props.disabled ? grey[2] : props.theme.styles['primary-color'] || blue[4])};
         cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
     }
 `;
@@ -79,11 +80,23 @@ const LineageBadge = styled(Badge)`
     }
 `;
 
+const BreadcrumbItem = styled(Breadcrumb.Item)<{ disabled: boolean }>`
+    &&& :hover {
+        color: ${(props) => (props.disabled ? ANTD_GRAY[7] : props.theme.styles['primary-color'])};
+    }
+`;
+
 /**
  * Responsible for rendering a clickable browse path view.
  */
 // TODO(Gabe): use this everywhere
-export const ProfileNavBrowsePath = ({ type, path, upstreams, downstreams }: Props): JSX.Element => {
+export const ProfileNavBrowsePath = ({
+    type,
+    path,
+    upstreams,
+    downstreams,
+    breadcrumbLinksEnabled,
+}: Props): JSX.Element => {
     const entityRegistry = useEntityRegistry();
     const history = useHistory();
     const location = useLocation();
@@ -96,25 +109,40 @@ export const ProfileNavBrowsePath = ({ type, path, upstreams, downstreams }: Pro
     const baseBrowsePath = `${PageRoutes.BROWSE}/${entityRegistry.getPathName(type)}`;
 
     const pathCrumbs = path.map((part, index) => (
-        <Breadcrumb.Item key={`${part || index}`}>
-            <Link
-                to={
-                    index === path.length - 1 ? '#' : `${baseBrowsePath}/${createPartialPath(path.slice(0, index + 1))}`
-                }
-            >
-                {part}
-            </Link>
-        </Breadcrumb.Item>
+        <BreadcrumbItem key={`${part || index}`} disabled={!breadcrumbLinksEnabled}>
+            {breadcrumbLinksEnabled ? (
+                <Link
+                    to={
+                        index === path.length - 1
+                            ? '#'
+                            : `${baseBrowsePath}/${createPartialPath(path.slice(0, index + 1))}`
+                    }
+                >
+                    {part}
+                </Link>
+            ) : (
+                part
+            )}
+        </BreadcrumbItem>
     ));
 
     const hasLineage = upstreams > 0 || downstreams > 0;
 
+    const upstreamText = upstreams === 100 ? '100+' : upstreams;
+    const downstreamText = downstreams === 100 ? '100+' : downstreams;
+
     return (
         <BrowseRow>
             <Breadcrumb style={{ fontSize: '16px' }} separator=">">
-                <Breadcrumb.Item>
-                    <Link to={baseBrowsePath}>{entityRegistry.getCollectionName(type)}</Link>
-                </Breadcrumb.Item>
+                <BreadcrumbItem disabled={!breadcrumbLinksEnabled}>
+                    {breadcrumbLinksEnabled ? (
+                        <Link to={breadcrumbLinksEnabled ? baseBrowsePath : undefined}>
+                            {entityRegistry.getCollectionName(type)}
+                        </Link>
+                    ) : (
+                        entityRegistry.getCollectionName(type)
+                    )}
+                </BreadcrumbItem>
                 {pathCrumbs}
             </Breadcrumb>
             <LineageNavContainer>
@@ -122,7 +150,11 @@ export const ProfileNavBrowsePath = ({ type, path, upstreams, downstreams }: Pro
                     <IconGroup
                         disabled={!hasLineage}
                         isSelected={!isLineageMode}
-                        onClick={() => navigateToLineageUrl({ location, history, isLineageMode: false })}
+                        onClick={() => {
+                            if (hasLineage) {
+                                navigateToLineageUrl({ location, history, isLineageMode: false });
+                            }
+                        }}
                     >
                         <DetailIcon />
                         Details
@@ -130,14 +162,18 @@ export const ProfileNavBrowsePath = ({ type, path, upstreams, downstreams }: Pro
                     <IconGroup
                         disabled={!hasLineage}
                         isSelected={isLineageMode}
-                        onClick={() => navigateToLineageUrl({ location, history, isLineageMode: true })}
+                        onClick={() => {
+                            if (hasLineage) {
+                                navigateToLineageUrl({ location, history, isLineageMode: true });
+                            }
+                        }}
                     >
                         <LineageIcon />
                         Lineage
                     </IconGroup>
                 </LineageIconGroup>
                 <LineageSummary>
-                    <LineageBadge count={`${upstreams} upstream, ${downstreams} downstream`} />
+                    <LineageBadge count={`${upstreamText} upstream, ${downstreamText} downstream`} />
                 </LineageSummary>
             </LineageNavContainer>
         </BrowseRow>
