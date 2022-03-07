@@ -71,7 +71,7 @@ def _protobuf_fields_to_mce_fields(
             )
 
         field = SchemaField(
-            fieldPath=f"{parent}.{f.name}",
+            fieldPath=f"{parent}.[type={f.type}].{f.name}",
             nativeDataType=f"{f.type} {f.key_type}" if f.type == "repeated" else f.type,
             type=field_type,
         )
@@ -83,7 +83,11 @@ def _protobuf_fields_to_mce_fields(
 def _oneofs_to_mce_fields(oneof: Oneof, parent: str = None) -> List[SchemaField]:
     """Converts protobuf oneofs into MCE unions"""
     fields: List[SchemaField] = []
-    current_path = f"{parent}.{oneof.name}" if parent is not None else oneof.name
+    current_path = (
+        f"{parent}.[type=union].{oneof.name}"
+        if parent is not None
+        else f"[type=union].{oneof.name}"
+    )
 
     # Add the oneof itself
     fields.append(
@@ -103,7 +107,11 @@ def _oneofs_to_mce_fields(oneof: Oneof, parent: str = None) -> List[SchemaField]
 def _enums_to_mce_fields(pbenum: Enum, parent: str = None) -> List[SchemaField]:
     """Converts protobuf enums into MCE enums"""
     fields: List[SchemaField] = []
-    current_path = f"{parent}.{pbenum.name}" if parent is not None else pbenum.name
+    current_path = (
+        f"{parent}.[type=enum].{pbenum.name}"
+        if parent is not None
+        else f"[type=enum]{pbenum.name}"
+    )
 
     # Add the enum itself
     fields.append(
@@ -123,7 +131,11 @@ def _enums_to_mce_fields(pbenum: Enum, parent: str = None) -> List[SchemaField]:
 def _message_to_mce_fields(message: Message, parent: str = None) -> List[SchemaField]:
     """Converts protobuf messages into MCE records"""
     fields: List[SchemaField] = []
-    current_path = f"{parent}.{message.name}" if parent is not None else message.name
+    current_path = (
+        f"{parent}.[type={message.name}].{message.name}"
+        if parent is not None
+        else f"[type={message.name}].{message.name}"
+    )
 
     # Add the message itself
     fields.append(
@@ -152,14 +164,25 @@ def _message_to_mce_fields(message: Message, parent: str = None) -> List[SchemaF
     return fields
 
 
-def protobuf_schema_to_mce_fields(protobuf_schema_string: str) -> List[SchemaField]:
-    """Converts a protobuf schema into a schema compatible with MCE"""
+def protobuf_schema_to_mce_fields(
+    protobuf_schema_string: str, is_key_schema: bool = False
+) -> List[SchemaField]:
+    """
+    Converts a protobuf schema into a schema compatible with MCE
+    :param protobuf_schema_string: String representation of the protobuf schema
+    :param is_key_schema: True if it is a key-schema. Default is False (value-schema).
+    :return: The list of MCE compatible SchemaFields.
+    """
 
     proto_file = protoparser.parse(protobuf_schema_string)
+
+    current_path = "[version=2.0]"
+    if is_key_schema:
+        current_path += ".[key=True]"
 
     fields: List[SchemaField] = []
     for k, v in proto_file.messages.items():
         if isinstance(v, Message):
-            fields += _message_to_mce_fields(v)
+            fields += _message_to_mce_fields(v, current_path)
 
     return fields

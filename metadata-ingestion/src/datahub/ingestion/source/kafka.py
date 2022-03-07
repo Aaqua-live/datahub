@@ -115,6 +115,7 @@ class KafkaSource(Source):
             fields = schema_util.avro_schema_to_mce_fields(schema.schema_str)
         elif schema and schema.schema_type == "PROTOBUF":
             fields = protobuf_util.protobuf_schema_to_mce_fields(schema.schema_str)
+            print(fields)
         elif schema is not None:
             self.report.report_warning(
                 topic,
@@ -138,6 +139,8 @@ class KafkaSource(Source):
             key_fields = schema_util.avro_schema_to_mce_fields(
                 key_schema.schema_str, is_key_schema=True
             )
+        elif key_schema and schema.schema_type == "PROTOBUF":
+            fields = protobuf_util.protobuf_schema_to_mce_fields(schema.schema_str)
         elif key_schema is not None:
             self.report.report_warning(
                 topic,

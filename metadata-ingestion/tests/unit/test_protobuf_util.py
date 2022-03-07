@@ -120,7 +120,7 @@ def test_protobuf_schema_to_mce_fields_with_single_empty_message():
     fields = protobuf_schema_to_mce_fields(schema)
 
     assert 1 == len(fields)
-    assert "test" == fields[0].fieldPath
+    assert "[version=2.0].[type=test].test" == fields[0].fieldPath
 
 
 def test_protobuf_schema_to_mce_fields_with_single_message_single_field():
@@ -129,8 +129,8 @@ def test_protobuf_schema_to_mce_fields_with_single_message_single_field():
 
     # 1 message + 1 field
     assert 2 == len(fields)
-    assert "test" == fields[0].fieldPath
-    assert "test.field_1" == fields[1].fieldPath
+    assert "[version=2.0].[type=test].test" == fields[0].fieldPath
+    assert "[version=2.0].[type=test].test.[type=string].field_1" == fields[1].fieldPath
     assert "message" == fields[0].nativeDataType
     assert "string" == fields[1].nativeDataType
 
@@ -140,11 +140,14 @@ def test_protobuf_schema_to_mce_fields_with_two_messages_enum():
     fields = protobuf_schema_to_mce_fields(schema)
 
     assert 8 == len(fields)
-    assert "test" == fields[0].fieldPath
-    assert "test.field_1" == fields[1].fieldPath
-    assert "test.field_2" == fields[2].fieldPath
-    assert "test.anEnum" == fields[3].fieldPath
-    assert "test.anEnum.first" == fields[4].fieldPath
+    assert "[version=2.0].[type=test].test" == fields[0].fieldPath
+    assert "[version=2.0].[type=test].test.[type=string].field_1" == fields[1].fieldPath
+    assert "[version=2.0].[type=test].test.[type=anEnum].field_2" == fields[2].fieldPath
+    assert "[version=2.0].[type=test].test.[type=enum].anEnum" == fields[3].fieldPath
+    assert (
+        "[version=2.0].[type=test].test.[type=enum].anEnum.[type=enum].first"
+        == fields[4].fieldPath
+    )
     assert "test.anEnum.second" == fields[5].fieldPath
     assert "anotherMessage" == fields[6].fieldPath
     assert "anotherMessage.anInteger" == fields[7].fieldPath
